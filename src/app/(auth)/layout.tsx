@@ -1,7 +1,7 @@
 function PlainGreyBookCard({ aspect = "aspect-[2/3]" }: { aspect?: string }) {
   return (
     <div
-      className={`w-full ${aspect} rounded-2xl bg-stone-300/60 border border-stone-400/25 shadow-md shrink-0`}
+      className={`w-full ${aspect} rounded-2xl bg-muted border border-border shadow-sm shrink-0`}
     />
   );
 }
@@ -39,10 +39,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-paper text-stone-900 font-sans overflow-hidden">
-      <div className="hidden lg:flex relative overflow-hidden lg:w-[45%] h-screen shrink-0">
-        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-paper via-paper/80 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-paper via-paper/80 to-transparent z-10 pointer-events-none" />
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground font-sans overflow-hidden">
+      <div className="hidden lg:flex relative overflow-hidden lg:w-[45%] h-screen shrink-0 border-r border-border">
+        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-white via-white/80 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white via-white/80 to-transparent z-10 pointer-events-none" />
 
         <div className="w-full h-[200%] absolute top-0 inset-x-0 grid grid-cols-3 gap-6 sm:gap-8 p-6 opacity-70">
           <div className="flex flex-col gap-6 sm:gap-8 animate-move-down pt-0">
@@ -65,7 +65,7 @@ export default function AuthLayout({
         </div>
       </div>
 
-      <div className="flex-1 lg:w-[55%] h-screen flex items-center justify-center p-8 sm:p-12 lg:p-16 overflow-y-auto">
+      <div className="flex-1 lg:w-[55%] h-screen flex items-center justify-center p-8 sm:p-12 lg:p-16 overflow-y-auto bg-background">
         <div className="w-full max-w-sm">{children}</div>
       </div>
     </div>

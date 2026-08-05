@@ -1,32 +1,80 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { navItems } from "@/lib/config/nav";
 import {
-  BookOpen,
-  Bookmark,
-  FolderHeart,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  Trophy,
-} from "lucide-react";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+type UserData = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+function NavButton({
+  item,
+  isActive,
+}: {
+  item: { title: string; href: string; icon: React.ElementType };
+  isActive: boolean;
+}) {
+  const Icon = item.icon;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Link
+            href={item.href}
+            className={cn(
+              "flex items-center justify-center lg:justify-start gap-4 w-12 h-12 lg:w-full lg:h-14 px-0 lg:px-4 rounded-2xl font-semibold text-base transition-all",
+              isActive
+                ? "bg-foreground/10 text-foreground"
+                : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+            )}
+          >
+            <Icon
+              className={cn(
+                "w-6 h-6 shrink-0",
+                isActive ? "text-foreground" : "text-subtle"
+              )}
+            />
+            <span className="hidden lg:block">{item.title}</span>
+          </Link>
+        }
+      />
+      <TooltipContent side="right" className="lg:hidden">
+        {item.title}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function AppSidebar() {
+  const pathname = usePathname();
   const router = useRouter();
+  const [user, setUser] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        }
+      } catch {}
+    }
+    fetchUser();
+  }, []);
 
   async function handleSignOut(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,137 +87,71 @@ export function AppSidebar() {
     }
   }
 
+  const initial = user?.name ? user.name.charAt(0).toUpperCase() : "N";
+
   return (
-    <Sidebar variant="sidebar" className="border-r border-stone-200/80 bg-[#faf8f5]">
-      <SidebarHeader className="p-4 border-b border-stone-200/60">
-        <Link href="/dashboard" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 font-display font-bold text-lg group-hover:scale-105 transition-transform">
-            N
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-bold text-stone-900 font-display tracking-tight leading-none">
-              Nook
-            </span>
-            <span className="text-[10px] text-stone-500 font-mono mt-0.5">
-              Reading Corner
-            </span>
-          </div>
-        </Link>
-      </SidebarHeader>
-
-      <SidebarContent className="px-2 py-3">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider px-2 mb-1">
-            Menu
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-amber-700 bg-amber-500/10 rounded-xl px-3 py-2">
-                      <LayoutDashboard className="w-4 h-4 text-amber-600" />
-                      <span>Dashboard</span>
-                    </Link>
-                  }
-                  isActive
-                />
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl px-3 py-2">
-                      <BookOpen className="w-4 h-4 text-stone-500" />
-                      <span>My Library</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl px-3 py-2">
-                      <Bookmark className="w-4 h-4 text-stone-500" />
-                      <span>Currently Reading</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl px-3 py-2">
-                      <Trophy className="w-4 h-4 text-stone-500" />
-                      <span>Reading Goals</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl px-3 py-2">
-                      <FolderHeart className="w-4 h-4 text-stone-500" />
-                      <span>Collections</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupLabel className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider px-2 mb-1">
-            Preferences
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={
-                    <Link href="/dashboard" className="flex items-center gap-3 font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl px-3 py-2">
-                      <Settings className="w-4 h-4 text-stone-500" />
-                      <span>Settings</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="p-3 border-t border-stone-200/60">
-        <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-stone-200/80 shadow-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-xs shrink-0">
-              A
+    <TooltipProvider delay={200}>
+      <aside className="hidden md:flex flex-col h-svh w-16 lg:w-64 shrink-0 border-r border-border bg-background sticky top-0">
+        <div className="flex items-center justify-center lg:justify-start h-16 px-3 border-b border-border shrink-0">
+          <Link href="/home" className="flex items-center gap-2.5 group min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              N
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold text-stone-900 truncate">
-                Ada Lovelace
+            <div className="hidden lg:flex flex-col min-w-0">
+              <span className="text-base font-bold text-foreground font-display tracking-tight leading-none">
+                Nook
               </span>
-              <span className="text-[10px] text-stone-500 truncate">
-                ada@example.com
+              <span className="text-[10px] text-subtle font-mono mt-0.5">
+                Reading Corner
               </span>
             </div>
-          </div>
-          <form onSubmit={handleSignOut}>
-            <button
-              type="submit"
-              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </form>
+          </Link>
         </div>
-      </SidebarFooter>
-    </Sidebar>
+
+        <nav className="flex flex-col flex-1 justify-start gap-1 px-2 py-4">
+          {navItems.map((item) => (
+            <NavButton
+              key={item.href}
+              item={item}
+              isActive={
+                pathname === item.href ||
+                pathname.startsWith(item.href + "/")
+              }
+            />
+          ))}
+        </nav>
+
+        <div className="p-2 border-t border-border shrink-0">
+          <div className="flex items-center justify-center lg:justify-between gap-2.5 p-2 rounded-xl bg-card border border-border shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0">
+              {initial}
+            </div>
+            <div className="hidden lg:flex flex-col min-w-0 flex-1">
+              <span className="text-xs font-semibold text-foreground truncate">
+                {user?.name || "Reading Corner"}
+              </span>
+              <span className="text-[10px] text-muted-foreground truncate">
+                {user?.email || ""}
+              </span>
+            </div>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <form onSubmit={handleSignOut} className="hidden lg:block">
+                    <button
+                      type="submit"
+                      className="p-1.5 rounded-lg text-subtle hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </form>
+                }
+              />
+              <TooltipContent side="right">Sign out</TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }

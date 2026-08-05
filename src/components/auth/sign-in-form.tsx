@@ -60,7 +60,7 @@ export function SignInForm() {
       <Field data-invalid={!!errors.email} className="space-y-1.5">
         <FieldLabel
           htmlFor="email"
-          className="text-xs font-medium text-stone-700 pl-1 block"
+          className="text-xs font-medium text-muted-foreground pl-1 block"
         >
           Email
         </FieldLabel>
@@ -70,7 +70,7 @@ export function SignInForm() {
           autoComplete="email"
           placeholder="name@example.com"
           {...register("email")}
-          className="h-11 px-4 rounded-xl bg-white border-stone-200 text-stone-900 text-sm placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all"
+          className="h-11 px-4 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-subtle focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-foreground transition-all"
         />
         {errors.email && (
           <FieldError className="text-xs text-red-500 pl-1 font-medium">
@@ -82,7 +82,7 @@ export function SignInForm() {
       <Field data-invalid={!!errors.password} className="space-y-1.5">
         <FieldLabel
           htmlFor="password"
-          className="text-xs font-medium text-stone-700 pl-1 block"
+          className="text-xs font-medium text-muted-foreground pl-1 block"
         >
           Password
         </FieldLabel>
@@ -93,14 +93,14 @@ export function SignInForm() {
             autoComplete="current-password"
             placeholder="••••••••"
             {...register("password")}
-            className="h-11 pl-4 pr-12 rounded-xl bg-white border-stone-200 text-stone-900 text-sm placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all"
+            className="h-11 pl-4 pr-12 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-subtle focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-foreground transition-all"
           />
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-1 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 h-9 w-9"
+            className="absolute right-1 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground h-9 w-9"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -126,7 +126,7 @@ export function SignInForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-11 rounded-full bg-amber-500 hover:bg-amber-600 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all shadow-md shadow-amber-500/20 cursor-pointer mt-2"
+        className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground font-semibold text-sm transition-all shadow-md shadow-primary/20 cursor-pointer mt-2"
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center gap-2">
