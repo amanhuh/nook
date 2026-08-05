@@ -12,8 +12,19 @@ export async function POST(request: NextRequest) {
     const result = signUpSchema.safeParse(body);
 
     if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const path = issue.path[0];
+        if (typeof path === "string" && !fieldErrors[path]) {
+          fieldErrors[path] = issue.message;
+        }
+      }
+
       return NextResponse.json(
-        { error: result.error.issues[0].message },
+        {
+          error: result.error.issues[0]?.message || "Invalid input.",
+          fieldErrors,
+        },
         { status: 400 }
       );
     }

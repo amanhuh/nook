@@ -12,8 +12,19 @@ export async function POST(request: NextRequest) {
     const result = signInSchema.safeParse(body);
 
     if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const path = issue.path[0];
+        if (typeof path === "string" && !fieldErrors[path]) {
+          fieldErrors[path] = issue.message;
+        }
+      }
+
       return NextResponse.json(
-        { error: result.error.issues[0].message },
+        {
+          error: result.error.issues[0]?.message || "Invalid input.",
+          fieldErrors,
+        },
         { status: 400 }
       );
     }
@@ -25,7 +36,10 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email }).select("+passwordHash");
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password." },
+        {
+          error: "No account found with this email.",
+          fieldErrors: { email: "No account found with this email." },
+        },
         { status: 401 }
       );
     }
@@ -33,7 +47,10 @@ export async function POST(request: NextRequest) {
     const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid email or password." },
+        {
+          error: "Incorrect password. Please try again.",
+          fieldErrors: { password: "Incorrect password. Please try again." },
+        },
         { status: 401 }
       );
     }
