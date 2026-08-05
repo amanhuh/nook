@@ -7,7 +7,9 @@ export interface IBook {
   authors: string[];
   description?: string;
   coverUrl?: string;
-  tags: string[];
+  categories: string[];
+  pageCount?: number;
+  publishedDate?: number;
   status: BookStatus;
   lists: Types.ObjectId[];
   completedAt?: Date;
@@ -40,11 +42,19 @@ const BookSchema = new Schema<IBook>(
       type: String,
     },
 
-    tags: {
+    categories: {
       type: [String],
       default: [],
     },
 
+    pageCount: {
+      type: Number,
+    },
+
+    publishedDate: {
+      type: Number,
+    },
+    
     status: {
       type: String,
       enum: BOOK_STATUS,

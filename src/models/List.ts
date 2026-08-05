@@ -3,7 +3,6 @@ import { Schema, model, models, Types } from "mongoose";
 export interface IList {
   userId: Types.ObjectId;
   name: string;
-  icon?: string;
   color?: string;
 }
 
@@ -19,10 +18,6 @@ const ListSchema = new Schema<IList>(
       type: String,
       required: true,
       trim: true,
-    },
-
-    icon: {
-      type: String,
     },
 
     color: {
