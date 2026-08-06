@@ -1,11 +1,4 @@
-export const BOOK_STATUS = [
-  "WANT_TO_READ",
-  "READING",
-  "COMPLETED",
-  "DNF",
-] as const;
-
-export type BookStatus = (typeof BOOK_STATUS)[number];
+export type BookStatus = "WANT_TO_READ" | "READING" | "COMPLETED" | "DNF";
 
 export interface BookItem {
   id: string;
@@ -15,4 +8,17 @@ export interface BookItem {
   status: BookStatus;
   pageCount?: number;
   currentPage?: number;
+}
+
+export interface GoogleBookSearchResult {
+  id: string;
+  googleBookId: string;
+  title: string;
+  authors: string[];
+  description: string;
+  coverUrl: string;
+  smallCoverUrl: string;
+  categories: string[];
+  pageCount?: number;
+  publishedDate?: number;
 }

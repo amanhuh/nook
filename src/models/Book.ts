@@ -1,5 +1,6 @@
 import { Schema, model, models, Types } from "mongoose";
-import { BOOK_STATUS, BookStatus } from "@/types/books";
+import { BookStatus } from "@/types/books";
+import { BOOK_STATUS } from "@/lib/books";
 
 export interface IBook {
   userId: Types.ObjectId;

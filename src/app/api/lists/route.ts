@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { verifyToken } from "@/lib/auth";
 import { COOKIE_NAME } from "@/lib/cookies";
-import { createBookSchema } from "@/lib/validations/book";
-import Book from "@/models/Book";
+import List from "@/models/List";
 
 export async function GET() {
   try {
@@ -22,11 +21,16 @@ export async function GET() {
 
     await connectDB();
 
-    const books = await Book.find({ userId }).sort({ updatedAt: -1 });
+    const listsDocs = await List.find({ userId }).sort({ createdAt: -1 });
+    const lists = listsDocs.map((doc) => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      color: doc.color || "#78716c",
+      bookCount: doc.books ? doc.books.length : 0,
+    }));
 
-    return NextResponse.json({ books });
-  } catch (err) {
-    console.error("GET /api/books Error:", err);
+    return NextResponse.json({ lists });
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -49,44 +53,51 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const result = createBookSchema.safeParse(body);
+    const name = body?.name ? String(body.name).trim() : "";
 
-    if (!result.success) {
+    if (!name) {
       return NextResponse.json(
-        {
-          error: "Validation failed.",
-          details: result.error.flatten().fieldErrors,
-        },
+        { error: "Collection name cannot be empty." },
+        { status: 400 }
+      );
+    }
+
+    if (name.length > 30) {
+      return NextResponse.json(
+        { error: "Collection name must be 30 characters or less." },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    const cleanGoogleBookId = result.data.googleBookId?.trim() || undefined;
-
-    if (cleanGoogleBookId) {
-      const existing = await Book.findOne({ userId, googleBookId: cleanGoogleBookId });
-      if (existing) {
-        return NextResponse.json(
-          { error: "You have already saved this book to your library." },
-          { status: 409 }
-        );
-      }
+    const existing = await List.findOne({ userId, name: new RegExp(`^${name}$`, "i") });
+    if (existing) {
+      return NextResponse.json(
+        { error: "Collection already exists." },
+        { status: 400 }
+      );
     }
 
-    const cleanAuthors = result.data.authors.map((a) => a.trim()).filter(Boolean);
-
-    const book = await Book.create({
-      ...result.data,
-      authors: cleanAuthors.length > 0 ? cleanAuthors : ["Unknown Author"],
-      googleBookId: cleanGoogleBookId,
+    const doc = await List.create({
       userId,
+      name,
+      color: "#78716c",
+      books: [],
     });
 
-    return NextResponse.json({ book }, { status: 201 });
-  } catch (err) {
-    console.error("POST /api/books Error:", err);
+    return NextResponse.json(
+      {
+        list: {
+          id: doc._id.toString(),
+          name: doc.name,
+          color: doc.color,
+          bookCount: 0,
+        },
+      },
+      { status: 201 }
+    );
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

@@ -74,24 +74,13 @@ export default function HomePage() {
 
           {!hasAnyBooks ? (
             <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center mb-4">
-                <Library className="w-8 h-8 stroke-[1.5]" />
-              </div>
+              <Image src="/images/empty_state.png" alt="empty nook" width={1536} height={1024} className="max-w-[15%]" />
               <h3 className="text-xl font-bold font-display text-foreground tracking-tight mb-1">
                 Your reading nook is empty
               </h3>
               <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">
                 Start tracking your reading journey. Add your first book to organize your personal collection.
               </p>
-              <AddBookDrawer>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-6 h-11 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all cursor-pointer shadow-md shadow-primary/20"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add a Book
-                </button>
-              </AddBookDrawer>
             </div>
           ) : (
             <div className="space-y-10">
@@ -127,4 +116,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-}
+};

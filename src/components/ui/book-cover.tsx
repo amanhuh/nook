@@ -22,7 +22,7 @@ export function BookCover({
   return (
     <div
       className={cn(
-        "aspect-[2/3] rounded-xl overflow-hidden shrink-0 relative border border-foreground/10 shadow-xs",
+        "aspect-2/3 rounded rounded-r-xl overflow-hidden shrink-0 relative border border-foreground/10 shadow-xs",
         !imageUrl && "bg-foreground/8",
         className
       )}
@@ -32,6 +32,7 @@ export function BookCover({
           src={imageUrl}
           alt={alt}
           fill
+          unoptimized
           sizes="(max-width: 768px) 100px, 200px"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
