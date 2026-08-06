@@ -49,7 +49,7 @@ export function SignInForm() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/home");
     } catch {
       setError("root", { message: "Something went wrong. Please try again." });
     }

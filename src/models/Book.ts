@@ -3,19 +3,25 @@ import { BOOK_STATUS, BookStatus } from "@/types/books";
 
 export interface IBook {
   userId: Types.ObjectId;
+
   googleBookId?: string;
+
   title: string;
   authors: string[];
+
   description?: string;
   coverUrl?: string;
+
   categories: string[];
   pageCount?: number;
   publishedDate?: number;
+
   status: BookStatus;
-  lists: Types.ObjectId[];
   currentPage?: number;
+
   note?: string;
   tags: string[];
+
   completedAt?: Date;
 }
 
@@ -26,11 +32,9 @@ const BookSchema = new Schema<IBook>(
       ref: "User",
       required: true,
     },
-    
-    googleBookId: {
-      type: String,
-    },
-    
+
+    googleBookId: String,
+
     title: {
       type: String,
       required: true,
@@ -42,34 +46,22 @@ const BookSchema = new Schema<IBook>(
       required: true,
     },
 
-    description: {
-      type: String,
-    },
+    description: String,
 
-    coverUrl: {
-      type: String,
-    },
+    coverUrl: String,
 
     categories: {
       type: [String],
       default: [],
     },
 
-    pageCount: {
-      type: Number,
-    },
-    
-    publishedDate: {
-      type: Number,
-    },
+    pageCount: Number,
 
-    currentPage: {
-      type: Number,
-    },
+    publishedDate: Number,
 
-    note: {
-      type: String,
-    },
+    currentPage: Number,
+
+    note: String,
 
     tags: {
       type: [String],
@@ -82,19 +74,7 @@ const BookSchema = new Schema<IBook>(
       default: "WANT_TO_READ",
     },
 
-    lists: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "List",
-        },
-      ],
-      default: [],
-    },
-
-    completedAt: {
-      type: Date,
-    },
+    completedAt: Date,
   },
   {
     timestamps: true,
@@ -103,8 +83,16 @@ const BookSchema = new Schema<IBook>(
 
 BookSchema.index({ userId: 1 });
 BookSchema.index({ userId: 1, status: 1 });
-BookSchema.index({ userId: 1, googleBookId: 1 });
 
-const Book = models.Book || model<IBook>("Book", BookSchema);
+BookSchema.index(
+  {
+    userId: 1,
+    googleBookId: 1,
+  },
+  {
+    unique: true,
+    sparse: true,
+  }
+);
 
-export default Book;
+export default models.Book || model<IBook>("Book", BookSchema);

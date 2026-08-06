@@ -1,10 +1,37 @@
 import { Schema, model, models, Types } from "mongoose";
 
+export interface IListBook {
+  bookId: Types.ObjectId;
+  addedAt: Date;
+}
+
 export interface IList {
   userId: Types.ObjectId;
+
   name: string;
-  color?: string;
+
+  color: string;
+
+  books: IListBook[];
 }
+
+const ListBookSchema = new Schema<IListBook>(
+  {
+    bookId: {
+      type: Schema.Types.ObjectId,
+      ref: "Book",
+      required: true,
+    },
+
+    addedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    _id: false,
+  }
+);
 
 const ListSchema = new Schema<IList>(
   {
@@ -22,6 +49,12 @@ const ListSchema = new Schema<IList>(
 
     color: {
       type: String,
+      required: true,
+    },
+
+    books: {
+      type: [ListBookSchema],
+      default: [],
     },
   },
   {
@@ -31,6 +64,4 @@ const ListSchema = new Schema<IList>(
 
 ListSchema.index({ userId: 1 });
 
-const List = models.List || model<IList>("List", ListSchema);
-
-export default List;
+export default models.List || model<IList>("List", ListSchema);
