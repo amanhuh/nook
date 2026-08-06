@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCoverByIndex } from "@/lib/config/covers";
 
@@ -22,8 +23,8 @@ export function BookCover({
   return (
     <div
       className={cn(
-        "aspect-2/3 rounded rounded-r-xl overflow-hidden shrink-0 relative border border-foreground/10 shadow-xs",
-        !imageUrl && "bg-foreground/8",
+        "aspect-2/3 rounded rounded-r-xl overflow-hidden shrink-0 relative border border-foreground/10 shadow-xs flex items-center justify-center",
+        !imageUrl && "bg-muted/40 border border-border/60",
         className
       )}
     >
@@ -36,7 +37,9 @@ export function BookCover({
           sizes="(max-width: 768px) 100px, 200px"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-      ) : null}
+      ) : (
+        <BookOpen className="w-8 h-8 text-muted-foreground/60" />
+      )}
       {children}
     </div>
   );

@@ -35,9 +35,10 @@ import { BookCollectionSelect } from "./add-book-drawer/book-collection-select";
 
 interface AddBookDrawerProps {
   children: React.ReactNode;
+  onBookChange?: () => void;
 }
 
-export function AddBookDrawer({ children }: AddBookDrawerProps) {
+export function AddBookDrawer({ children, onBookChange }: AddBookDrawerProps) {
   const [open, setOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
@@ -127,6 +128,7 @@ export function AddBookDrawer({ children }: AddBookDrawerProps) {
         reset();
         setIsLocked(false);
         setOpen(false);
+        onBookChange?.();
       } else {
         const errData = await res.json();
         toast.error(errData.error || "Failed to save book.");

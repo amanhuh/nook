@@ -5,6 +5,7 @@ import { verifyToken } from "@/lib/auth";
 import { COOKIE_NAME } from "@/lib/cookies";
 import { updateBookSchema } from "@/lib/validations/book";
 import Book from "@/models/Book";
+import List from "@/models/List";
 
 export async function GET(
   _req: NextRequest,
@@ -12,6 +13,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    if (!id || id === "undefined") {
+      return NextResponse.json({ error: "Invalid book ID." }, { status: 400 });
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -26,13 +31,25 @@ export async function GET(
 
     await connectDB();
 
-    const book = await Book.findOne({ _id: id, userId });
-    if (!book) {
+    const doc = await Book.findOne({ _id: id, userId });
+    if (!doc) {
       return NextResponse.json({ error: "Book not found." }, { status: 404 });
     }
 
+    const book = {
+      id: doc._id.toString(),
+      title: doc.title,
+      authors: doc.authors,
+      coverUrl: doc.coverUrl,
+      status: doc.status,
+      pageCount: doc.pageCount,
+      currentPage: doc.currentPage,
+      createdAt: doc.createdAt,
+    };
+
     return NextResponse.json({ book });
-  } catch {
+  } catch (err) {
+    console.error("GET /api/books/[id] Error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -46,6 +63,10 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
+    if (!id || id === "undefined") {
+      return NextResponse.json({ error: "Invalid book ID." }, { status: 400 });
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -73,18 +94,35 @@ export async function PATCH(
 
     await connectDB();
 
-    const book = await Book.findOneAndUpdate(
+    const updatePayload: Record<string, unknown> = { ...result.data };
+    if (result.data.status === "COMPLETED" && !result.data.completedAt) {
+      updatePayload.completedAt = new Date();
+    }
+
+    const doc = await Book.findOneAndUpdate(
       { _id: id, userId },
-      { $set: result.data },
+      { $set: updatePayload },
       { new: true, runValidators: true }
     );
 
-    if (!book) {
+    if (!doc) {
       return NextResponse.json({ error: "Book not found." }, { status: 404 });
     }
 
+    const book = {
+      id: doc._id.toString(),
+      title: doc.title,
+      authors: doc.authors,
+      coverUrl: doc.coverUrl,
+      status: doc.status,
+      pageCount: doc.pageCount,
+      currentPage: doc.currentPage,
+      createdAt: doc.createdAt,
+    };
+
     return NextResponse.json({ book });
-  } catch {
+  } catch (err) {
+    console.error("PATCH /api/books/[id] Error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -98,6 +136,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    if (!id || id === "undefined") {
+      return NextResponse.json({ error: "Invalid book ID." }, { status: 400 });
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -117,8 +159,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Book not found." }, { status: 404 });
     }
 
+    await List.updateMany(
+      { userId },
+      { $pull: { books: { bookId: id } } }
+    );
+
     return NextResponse.json({ message: "Book deleted successfully." });
-  } catch {
+  } catch (err) {
+    console.error("DELETE /api/books/[id] Error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

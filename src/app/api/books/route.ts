@@ -22,7 +22,17 @@ export async function GET() {
 
     await connectDB();
 
-    const books = await Book.find({ userId }).sort({ updatedAt: -1 });
+    const docs = await Book.find({ userId }).sort({ updatedAt: -1 });
+    const books = docs.map((doc) => ({
+      id: doc._id.toString(),
+      title: doc.title,
+      authors: doc.authors,
+      coverUrl: doc.coverUrl,
+      status: doc.status,
+      pageCount: doc.pageCount,
+      currentPage: doc.currentPage,
+      createdAt: doc.createdAt,
+    }));
 
     return NextResponse.json({ books });
   } catch (err) {
@@ -62,8 +72,11 @@ export async function POST(req: NextRequest) {
     }
 
     await connectDB();
+    await Book.syncIndexes();
 
-    const cleanGoogleBookId = result.data.googleBookId?.trim() || undefined;
+    const { googleBookId, authors, ...restData } = result.data;
+    const cleanGoogleBookId = googleBookId?.trim();
+    const cleanAuthors = authors.map((a) => a.trim()).filter(Boolean);
 
     if (cleanGoogleBookId) {
       const existing = await Book.findOne({ userId, googleBookId: cleanGoogleBookId });
@@ -75,18 +88,40 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const cleanAuthors = result.data.authors.map((a) => a.trim()).filter(Boolean);
-
-    const book = await Book.create({
-      ...result.data,
+    const bookData: Record<string, unknown> = {
+      ...restData,
       authors: cleanAuthors.length > 0 ? cleanAuthors : ["Unknown Author"],
-      googleBookId: cleanGoogleBookId,
       userId,
-    });
+    };
+
+    if (cleanGoogleBookId) {
+      bookData.googleBookId = cleanGoogleBookId;
+    }
+
+    const doc = await Book.create(bookData);
+
+    const book = {
+      id: doc._id.toString(),
+      title: doc.title,
+      authors: doc.authors,
+      coverUrl: doc.coverUrl,
+      status: doc.status,
+      pageCount: doc.pageCount,
+      currentPage: doc.currentPage,
+      createdAt: doc.createdAt,
+    };
 
     return NextResponse.json({ book }, { status: 201 });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("POST /api/books Error:", err);
+
+    if (typeof err === "object" && err !== null && "code" in err && (err as { code?: number }).code === 11000) {
+      return NextResponse.json(
+        { error: "You have already saved this book to your library." },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

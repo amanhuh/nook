@@ -92,7 +92,7 @@ BookSchema.index(
   },
   {
     unique: true,
-    sparse: true,
+    partialFilterExpression: { googleBookId: { $type: "string" } },
   }
 );
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { Plus, Library } from "lucide-react";
-import { BookItem, BookStatus } from "@/types/books";
+import { Plus } from "lucide-react";
+import { BookItem } from "@/types/books";
+import { BOOK_STATUS_LIST } from "@/lib/books";
 import { BookStatusSection } from "@/components/books/book-status-section";
 import { AddBookDrawer } from "@/components/books/add-book-drawer";
 import { Button } from "@/components/ui/button";
@@ -14,16 +15,19 @@ type UserData = {
   email: string;
 };
 
-const STATUS_SECTIONS: { status: BookStatus; title: string }[] = [
-  { status: "READING", title: "Currently Reading" },
-  { status: "WANT_TO_READ", title: "Want to Read" },
-  { status: "COMPLETED", title: "Completed" },
-  { status: "DNF", title: "Did Not Finish" },
-];
-
 export default function HomePage() {
   const [user, setUser] = useState<UserData | null>(null);
-  const [books] = useState<BookItem[]>([]);
+  const [books, setBooks] = useState<BookItem[]>([]);
+
+  const fetchBooks = useCallback(async () => {
+    try {
+      const res = await fetch("/api/books");
+      if (res.ok) {
+        const data = await res.json();
+        setBooks(data.books || []);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     async function fetchUser() {
@@ -36,7 +40,8 @@ export default function HomePage() {
       } catch {}
     }
     fetchUser();
-  }, []);
+    fetchBooks();
+  }, [fetchBooks]);
 
   const firstName = user?.name ? user.name.split(" ")[0] : "";
   const hasAnyBooks = books.length > 0;
@@ -53,7 +58,7 @@ export default function HomePage() {
               <p className="text-base sm:text-lg font-semibold font-body text-muted-foreground mt-4 tracking-tight mb-auto">
                 What are you reading today?
               </p>
-              <AddBookDrawer>
+              <AddBookDrawer onBookChange={fetchBooks}>
                 <Button className="mt-4 bg-foreground text-background rounded-lg hover:bg-foreground/90 py-5 md:py-6 px-5 md:px-8 cursor-pointer">
                   Add a Book
                   <Plus className="ml-1.5" />
@@ -84,12 +89,13 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="space-y-10">
-              {STATUS_SECTIONS.map(({ status, title }) => (
+              {BOOK_STATUS_LIST.map(({ id, sectionTitle }) => (
                 <BookStatusSection
-                  key={status}
-                  title={title}
-                  status={status}
+                  key={id}
+                  title={sectionTitle}
+                  status={id}
                   books={books}
+                  onBookChange={fetchBooks}
                 />
               ))}
             </div>
@@ -116,4 +122,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-};
+}
