@@ -6,3 +6,13 @@ export const BOOK_STATUS = [
 ] as const;
 
 export type BookStatus = (typeof BOOK_STATUS)[number];
+
+export interface BookItem {
+  id: string;
+  title: string;
+  authors: string[];
+  coverUrl?: string;
+  status: BookStatus;
+  pageCount?: number;
+  currentPage?: number;
+}
