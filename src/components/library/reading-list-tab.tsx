@@ -31,7 +31,7 @@ export function ReadingListTab({
 
   return (
     <div className="space-y-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-none snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 sm:overflow-visible sm:pb-0">
         {BOOK_STATUS_LIST.map(({ id, sectionTitle }) => {
           const statusBooks = books.filter((b) => b.status === id);
           const isSelected = selectedStatus === id;
@@ -43,7 +43,7 @@ export function ReadingListTab({
             <div
               key={id}
               onClick={() => onSelectStatus(isSelected ? "ALL" : id)}
-              className={`p-5 rounded-3xl border transition-all cursor-pointer flex items-center justify-between min-h-36 relative overflow-hidden group ${
+              className={`p-5 rounded-3xl border transition-all cursor-pointer flex items-center justify-between min-h-36 relative overflow-hidden group shrink-0 w-65 sm:w-auto snap-start ${
                 isSelected
                   ? "bg-card border-foreground shadow-sm"
                   : "bg-card border-border/80 hover:border-border hover:shadow-xs"

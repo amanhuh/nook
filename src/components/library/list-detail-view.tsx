@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, ArrowLeft, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 
@@ -36,6 +36,7 @@ export function ListDetailView({
 }: ListDetailViewProps) {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isUpdatingColor, setIsUpdatingColor] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -110,7 +111,7 @@ export function ListDetailView({
                   <TooltipTrigger render={
                     <button
                       type="button"
-                      onClick={() => onDeleteList(selectedList.id, selectedList.name)}
+                      onClick={() => setIsDeleteModalOpen(true)}
                       className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
                       aria-label="Delete list"
                     >
@@ -246,7 +247,7 @@ export function ListDetailView({
                   <TooltipTrigger render={
                     <button
                       type="button"
-                      onClick={() => onDeleteList(selectedList.id, selectedList.name)}
+                      onClick={() => setIsDeleteModalOpen(true)}
                       className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
                       aria-label="Delete list"
                     >
@@ -291,6 +292,59 @@ export function ListDetailView({
           ))}
         </div>
       </div>
+
+      <AnimatePresence>
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="relative w-full max-w-md rounded-3xl border border-border/80 bg-card p-6 shadow-xl z-10 space-y-4"
+            >
+              <div className="flex items-center gap-3 text-error">
+                <div className="w-10 h-10 rounded-2xl bg-error/10 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold font-display text-foreground">
+                  Delete List
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Are you sure you want to delete <strong className="text-foreground">"{selectedList.name}"</strong>? This action cannot be undone.
+              </p>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="rounded-full px-5 h-9 text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setIsDeleteModalOpen(false);
+                    onDeleteList(selectedList.id, selectedList.name);
+                  }}
+                  className="rounded-full px-5 h-9 text-xs font-semibold bg-error hover:bg-error/90 text-white cursor-pointer shadow-xs"
+                >
+                  Delete List
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

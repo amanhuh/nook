@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BookCover } from "@/components/ui/book-cover";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Popover,
   PopoverContent,
@@ -67,6 +68,11 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
   const selectedBookIds = watch("books") || [];
 
   const selectedHexColor = LIST_COLORS[selectedColorName]?.hex || "#C7CED9";
+
+  const previewCovers = selectedBookIds
+    .map((id) => userBooks.find((b) => b.id === id)?.coverUrl)
+    .filter((url): url is string => Boolean(url))
+    .slice(0, 3);
 
   const fetchBooks = useCallback(async () => {
     setLoadingBooks(true);
@@ -148,7 +154,7 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
         style={{ "--drawer-inset": "10px" } as React.CSSProperties}
       >
         <DrawerHeader className="space-y-1 px-4 pt-4 md:px-6 md:pt-4 text-left shrink-0">
-          <DrawerTitle className="text-2xl font-bold font-display text-foreground tracking-tight flex items-center gap-2">
+          <DrawerTitle className="text-xl font-bold font-display text-foreground tracking-tight flex items-center gap-2">
             Add List
           </DrawerTitle>
         </DrawerHeader>
@@ -156,11 +162,47 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
         <div className="px-4 md:px-6 space-y-4 shrink-0">
           <div
             style={{ backgroundColor: selectedHexColor }}
-            className="w-full h-40 sm:h-48 rounded-3xl p-4 border border-black/10 shadow-sm flex flex-col justify-start items-center relative overflow-hidden transition-colors duration-300"
+            className="w-full h-54 sm:h-64 rounded-3xl p-4 border border-black/10 shadow-sm flex flex-col justify-between items-center relative overflow-hidden transition-colors duration-300 pt-6 pb-0"
           >
-            <h3 className="text-lg sm:text font-semibold font-display text-foreground/80 tracking-tight drop-shadow-xs truncate max-w-full pt-2 text-center">
-              {nameValue.trim() || "List Name"}
-            </h3>
+            <div className="text-center space-y-1 z-10 w-full px-2">
+              <h3 className="text-lg font-semibold font-display text-foreground/80 tracking-tight drop-shadow-xs truncate max-w-full text-center">
+                {nameValue.trim() || "List Name"}
+              </h3>
+              <p className="text-xs font-medium text-foreground/70">
+                {selectedBookIds.length} {selectedBookIds.length === 1 ? "book" : "books"}
+              </p>
+            </div>
+
+            {previewCovers.length > 0 && (
+              <div className="relative w-full flex items-end justify-center h-44 sm:h-48 overflow-hidden z-10 -mb-2">
+                {previewCovers.length === 3 ? (
+                  <>
+                    <div className="w-24 sm:w-25 overflow-hidden shadow-xl transform -rotate-8 translate-y-9 -mr-10 sm:-mr-11 z-10 shrink-0">
+                      <BookCover src={previewCovers[0]} className="w-full h-full rounded-r-sm" />
+                    </div>
+                    <div className="w-24 sm:w-25 overflow-hidden shadow-2xl transform rotate-0 translate-y-6 z-20 shrink-0">
+                      <BookCover src={previewCovers[1]} className="w-full h-full rounded-r-sm" />
+                    </div>
+                    <div className="w-24 sm:w-25 overflow-hidden shadow-xl transform rotate-8 translate-y-9 -ml-10 sm:-ml-11 z-10 shrink-0">
+                      <BookCover src={previewCovers[2]} className="w-full h-full rounded-r-sm" />
+                    </div>
+                  </>
+                ) : previewCovers.length === 2 ? (
+                  <>
+                    <div className="w-24 sm:w-25 overflow-hidden shadow-xl transform -rotate-8 translate-y-8 -mr-6 z-10 shrink-0">
+                      <BookCover src={previewCovers[0]} className="w-full h-full rounded-r-sm" />
+                    </div>
+                    <div className="w-24 sm:w-25 overflow-hidden shadow-2xl transform rotate-8 translate-y-6 z-20 shrink-0">
+                      <BookCover src={previewCovers[1]} className="w-full h-full rounded-r-sm" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-24 sm:w-25 overflow-hidden shadow-xl transform rotate-0 translate-y-6 z-10 shrink-0">
+                    <BookCover src={previewCovers[0]} className="w-full h-full rounded-r-sm" />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <Controller
@@ -276,8 +318,13 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
               </div>
 
               {loadingBooks ? (
-                <div className="flex items-center justify-center py-10">
-                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 animate-pulse">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex flex-col gap-1.5">
+                      <Skeleton className="w-full aspect-2/3 rounded-xl bg-muted/60" />
+                      <Skeleton className="h-3 w-16 rounded-md bg-muted/40" />
+                    </div>
+                  ))}
                 </div>
               ) : displayedBooks.length === 0 ? (
                 <div className="py-8 text-center text-xs text-muted-foreground">
