@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, Pencil } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +17,7 @@ interface ListDetailHeaderProps {
   isColorPickerOpen: boolean;
   isUpdatingColor: boolean;
   onBack: () => void;
+  onOpenEditDrawer: () => void;
   onToggleColorPicker: () => void;
   onCloseColorPicker: () => void;
   onSelectColor: (colorName: string) => void;
@@ -29,6 +30,7 @@ export function ListDetailHeader({
   isColorPickerOpen,
   isUpdatingColor,
   onBack,
+  onOpenEditDrawer,
   onToggleColorPicker,
   onCloseColorPicker,
   onSelectColor,
@@ -45,73 +47,65 @@ export function ListDetailHeader({
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground tracking-tight">
-          {selectedList.name}
-        </h2>
+
+        <div className="flex items-center gap-2 group cursor-pointer" onClick={onOpenEditDrawer}>
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground tracking-tight group-hover:opacity-80 transition-opacity">
+            {selectedList.name}
+          </h2>
+          <button
+            type="button"
+            className="p-1 rounded-full text-subtle hover:text-foreground transition-colors cursor-pointer"
+            title="Edit List"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center justify-start gap-2.5 relative z-10">
-        {isMobile ? (
-          <>
-            <TooltipProvider delay={400}>
-              <Tooltip>
-                <TooltipTrigger render={
-                  <button
-                    type="button"
-                    onClick={onOpenDeleteModal}
-                    className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
-                    aria-label="Delete list"
-                  >
-                    <Trash2 className="w-4.5 h-4.5" />
-                  </button>
-                } />
-                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
-                  Delete list
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        <TooltipProvider delay={400}>
+          <Tooltip>
+            <TooltipTrigger render={
+              <button
+                type="button"
+                onClick={onOpenEditDrawer}
+                className="p-2 rounded-full border border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                aria-label="Edit list details"
+              >
+                <Pencil className="w-4.5 h-4.5" />
+              </button>
+            } />
+            <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+              Edit collection
+            </TooltipContent>
+          </Tooltip>
 
-            <ListColorPickerPopover
-              currentColorHex={selectedList.color}
-              isColorPickerOpen={isColorPickerOpen}
-              isUpdatingColor={isUpdatingColor}
-              isMobile={isMobile}
-              onToggleColorPicker={onToggleColorPicker}
-              onCloseColorPicker={onCloseColorPicker}
-              onSelectColor={onSelectColor}
-            />
-          </>
-        ) : (
-          <>
-            <ListColorPickerPopover
-              currentColorHex={selectedList.color}
-              isColorPickerOpen={isColorPickerOpen}
-              isUpdatingColor={isUpdatingColor}
-              isMobile={isMobile}
-              onToggleColorPicker={onToggleColorPicker}
-              onCloseColorPicker={onCloseColorPicker}
-              onSelectColor={onSelectColor}
-            />
+          <ListColorPickerPopover
+            currentColorHex={selectedList.color}
+            isColorPickerOpen={isColorPickerOpen}
+            isUpdatingColor={isUpdatingColor}
+            isMobile={isMobile}
+            onToggleColorPicker={onToggleColorPicker}
+            onCloseColorPicker={onCloseColorPicker}
+            onSelectColor={onSelectColor}
+          />
 
-            <TooltipProvider delay={400}>
-              <Tooltip>
-                <TooltipTrigger render={
-                  <button
-                    type="button"
-                    onClick={onOpenDeleteModal}
-                    className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
-                    aria-label="Delete list"
-                  >
-                    <Trash2 className="w-4.5 h-4.5" />
-                  </button>
-                } />
-                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
-                  Delete list
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </>
-        )}
+          <Tooltip>
+            <TooltipTrigger render={
+              <button
+                type="button"
+                onClick={onOpenDeleteModal}
+                className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
+                aria-label="Delete list"
+              >
+                <Trash2 className="w-4.5 h-4.5" />
+              </button>
+            } />
+            <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+              Delete list
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

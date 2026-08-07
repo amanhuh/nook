@@ -26,20 +26,42 @@ import { ListPreviewCard } from "./add-list-drawer/list-preview-card";
 import { ListColorPicker } from "./add-list-drawer/list-color-picker";
 import { ListBookSelector } from "./add-list-drawer/list-book-selector";
 
-interface AddListDrawerProps {
-  children: React.ReactNode;
-  onListCreated?: () => void;
+interface EditListData {
+  id: string;
+  name: string;
+  colorName: ListColorName;
+  bookIds: string[];
 }
 
-export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
-  const [open, setOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<BookStatus | "ALL">("ALL");
+interface AddListDrawerProps {
+  children?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  list?: EditListData;
+  onListCreated?: () => void;
+  onListUpdated?: () => void;
+}
 
+export function AddListDrawer({
+  children,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  list,
+  onListCreated,
+  onListUpdated,
+}: AddListDrawerProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = isControlled ? controlledOnOpenChange || (() => {}) : setUncontrolledOpen;
+
+  const [statusFilter, setStatusFilter] = useState<BookStatus | "ALL">("ALL");
   const [userBooks, setUserBooks] = useState<BookItem[]>([]);
   const [loadingBooks, setLoadingBooks] = useState(false);
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
   const isMobile = useIsMobile();
+  const isEditMode = Boolean(list);
 
   const {
     register,
@@ -52,11 +74,21 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
   } = useForm<CreateListInput>({
     resolver: zodResolver(createListSchema),
     defaultValues: {
-      name: "",
-      colorName: "Slate",
-      books: [],
+      name: list?.name || "",
+      colorName: list?.colorName || "Slate",
+      books: list?.bookIds || [],
     },
   });
+
+  useEffect(() => {
+    if (list) {
+      reset({
+        name: list.name,
+        colorName: list.colorName,
+        books: list.bookIds,
+      });
+    }
+  }, [list, reset]);
 
   const nameValue = watch("name") || "";
   const selectedColorName = watch("colorName") || "Slate";
@@ -96,7 +128,7 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (isSubmitting) return;
-    if (!nextOpen) {
+    if (!nextOpen && !isEditMode) {
       reset({
         name: "",
         colorName: "Slate",
@@ -109,27 +141,48 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
 
   const onSubmit = async (data: CreateListInput) => {
     try {
-      const res = await fetch("/api/lists", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        toast.success("List created successfully!");
-        reset({
-          name: "",
-          colorName: "Slate",
-          books: [],
+      if (isEditMode && list) {
+        const res = await fetch(`/api/lists/${list.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            colorName: data.colorName,
+            books: data.books,
+          }),
         });
-        setOpen(false);
-        onListCreated?.();
+
+        if (res.ok) {
+          toast.success("List updated successfully!");
+          setOpen(false);
+          onListUpdated?.();
+        } else {
+          const errData = await res.json();
+          toast.error(errData.error || "Failed to update list.");
+        }
       } else {
-        const errData = await res.json();
-        toast.error(errData.error || "Failed to create list.");
+        const res = await fetch("/api/lists", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          toast.success("List created successfully!");
+          reset({
+            name: "",
+            colorName: "Slate",
+            books: [],
+          });
+          setOpen(false);
+          onListCreated?.();
+        } else {
+          const errData = await res.json();
+          toast.error(errData.error || "Failed to create list.");
+        }
       }
     } catch {
-      toast.error("Failed to create list. Please try again.");
+      toast.error("Failed to save list. Please try again.");
     }
   };
 
@@ -137,14 +190,14 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange} swipeDirection={swipeDirection}>
-      <DrawerTrigger render={children as React.ReactElement} />
+      {children && <DrawerTrigger render={children as React.ReactElement} />}
       <DrawerContent
         className="flex flex-col gap-5 after:hidden"
         style={{ "--drawer-inset": "10px" } as React.CSSProperties}
       >
         <DrawerHeader className="space-y-1 px-4 pt-4 md:px-6 md:pt-4 text-left shrink-0">
           <DrawerTitle className="text-xl font-bold font-display text-foreground tracking-tight flex items-center gap-2">
-            Add List
+            {isEditMode ? "Edit List" : "Add List"}
           </DrawerTitle>
         </DrawerHeader>
 
@@ -227,7 +280,7 @@ export function AddListDrawer({ children, onListCreated }: AddListDrawerProps) {
                 <span>Saving...</span>
               </>
             ) : (
-              "Save List"
+              isEditMode ? "Save Changes" : "Save List"
             )}
           </Button>
         </div>

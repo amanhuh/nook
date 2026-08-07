@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -11,7 +11,7 @@ import { ReadingListTab } from "@/components/library/reading-list-tab";
 import { ListsGridTab, ListItem } from "@/components/library/lists-grid-tab";
 import { ListDetailView } from "@/components/library/list-detail-view";
 
-export default function LibraryPage() {
+function LibraryContent() {
   const searchParams = useSearchParams();
   const initialStatusParam = searchParams.get("status") as BookStatus | null;
   const initialTabParam = searchParams.get("tab");
@@ -140,5 +140,13 @@ export default function LibraryPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <Suspense fallback={<LibrarySkeleton activeTab="reading-list" />}>
+      <LibraryContent />
+    </Suspense>
   );
 }

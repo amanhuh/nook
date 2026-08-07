@@ -5,7 +5,7 @@ import { SignUpForm } from "@/components/auth";
 export default function SignUpPage() {
   return (
     <div className="space-y-6">
-      <Link href="/home" className="inline-flex items-center gap-2.5 mb-2">
+      <Link href="/" className="inline-flex items-center gap-2.5 mb-2">
         <Image
           src="/nook-logo.svg"
           alt="Nook logo"

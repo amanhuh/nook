@@ -60,7 +60,7 @@ export function MobileNav() {
         scrollDirection === "down" ? "translate-y-full" : "translate-y-0"
       )}
     >
-      <div className="flex items-center justify-around h-[68px] px-2">
+      <div className="flex items-center justify-around h-17 px-2">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");

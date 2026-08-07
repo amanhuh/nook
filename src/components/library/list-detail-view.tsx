@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { BookItem } from "@/types/books";
+import { ListColorName } from "@/types/lists";
+import { LIST_COLORS } from "@/lib/constants";
 import { BookCard } from "@/components/books/book-card";
-import { AddBookDrawer } from "@/components/books/add-book-drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ListItem } from "./lists-grid-tab";
+import { AddListDrawer } from "@/components/lists/add-list-drawer";
 
 import { ListDetailHeader } from "./list-detail-view/list-detail-header";
 import { ListMultiSelectToolbar } from "./list-detail-view/list-multi-select-toolbar";
@@ -21,6 +23,14 @@ interface ListDetailViewProps {
   onBack: () => void;
   onDeleteList: (listId: string, name: string) => void;
   onBookChange: () => void;
+}
+
+function getColorNameFromHex(hex?: string): ListColorName {
+  if (!hex) return "Slate";
+  const found = Object.entries(LIST_COLORS).find(
+    ([_, val]) => val.hex.toLowerCase() === hex.toLowerCase()
+  );
+  return (found ? found[0] : "Slate") as ListColorName;
 }
 
 export function ListDetailView({
@@ -37,14 +47,28 @@ export function ListDetailView({
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [isRemovingBooks, setIsRemovingBooks] = useState(false);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
   const isMobile = useIsMobile();
 
-  const selectedListBooks = books.filter((b) => {
-    if (b.lists && b.lists.includes(selectedList.id)) return true;
-    if (selectedList.books && selectedList.books.some((lb) => lb.bookId === b.id)) return true;
-    return false;
-  });
+  const selectedListBooks = useMemo(() => {
+    return books.filter((b) => {
+      if (b.lists && b.lists.includes(selectedList.id)) return true;
+      if (selectedList.books && selectedList.books.some((lb) => lb.bookId === b.id)) return true;
+      return false;
+    });
+  }, [books, selectedList]);
+
+  const editListData = useMemo(() => {
+    const colorName = getColorNameFromHex(selectedList.color);
+    const bookIds = selectedListBooks.map((b) => b.id);
+    return {
+      id: selectedList.id,
+      name: selectedList.name,
+      colorName,
+      bookIds,
+    };
+  }, [selectedList, selectedListBooks]);
 
   const handleToggleSelectBook = (bookId: string) => {
     setSelectedBookIds((prev) =>
@@ -130,6 +154,7 @@ export function ListDetailView({
         isColorPickerOpen={isColorPickerOpen}
         isUpdatingColor={isUpdatingColor}
         onBack={onBack}
+        onOpenEditDrawer={() => setIsEditDrawerOpen(true)}
         onToggleColorPicker={() => setIsColorPickerOpen((prev) => !prev)}
         onCloseColorPicker={() => setIsColorPickerOpen(false)}
         onSelectColor={handleSelectColor}
@@ -149,20 +174,21 @@ export function ListDetailView({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
           {!isSelectMode && (
-            <AddBookDrawer onBookChange={onBookChange}>
-              <div className="w-36 sm:w-40 shrink-0 flex flex-col gap-2 cursor-pointer group">
-                <div className="w-full aspect-2/3 rounded-xl border-2 border-dashed border-border/80 bg-muted/50 hover:bg-muted transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground shadow-2xs">
-                  <div className="w-9 h-9 rounded-xl bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                    <Plus className="w-5 h-5" />
-                  </div>
-                </div>
-                <div className="space-y-0.5 min-w-0">
-                  <h4 className="text-sm font-semibold text-foreground truncate leading-tight">
-                    Add Book
-                  </h4>
+            <div
+              onClick={() => setIsEditDrawerOpen(true)}
+              className="w-36 sm:w-40 shrink-0 flex flex-col gap-2 cursor-pointer group"
+            >
+              <div className="w-full aspect-2/3 rounded-xl border-2 border-dashed border-border/80 bg-muted/50 hover:bg-muted transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground shadow-2xs">
+                <div className="w-9 h-9 rounded-xl bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                  <Plus className="w-5 h-5" />
                 </div>
               </div>
-            </AddBookDrawer>
+              <div className="space-y-0.5 min-w-0">
+                <h4 className="text-sm font-semibold text-foreground truncate leading-tight">
+                  Add Book
+                </h4>
+              </div>
+            </div>
           )}
 
           {selectedListBooks.map((book) => (
@@ -177,6 +203,13 @@ export function ListDetailView({
           ))}
         </div>
       </div>
+
+      <AddListDrawer
+        open={isEditDrawerOpen}
+        onOpenChange={setIsEditDrawerOpen}
+        list={editListData}
+        onListUpdated={onBookChange}
+      />
 
       <RemoveBooksModal
         isOpen={isConfirmRemoveOpen}

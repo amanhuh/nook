@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { Types } from "mongoose";
 import { connectDB } from "@/lib/db";
 import { verifyToken } from "@/lib/auth";
 import { COOKIE_NAME } from "@/lib/cookies";
@@ -76,7 +77,11 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const updates: { name?: string; color?: string } = {};
+    const updates: {
+      name?: string;
+      color?: string;
+      books?: { bookId: Types.ObjectId; addedAt: Date }[];
+    } = {};
 
     if (body.name && typeof body.name === "string") {
       updates.name = body.name.trim();
@@ -86,6 +91,15 @@ export async function PATCH(
       updates.color = LIST_COLORS[body.colorName].hex;
     } else if (body.color && typeof body.color === "string") {
       updates.color = body.color;
+    }
+
+    if (Array.isArray(body.books)) {
+      updates.books = body.books
+        .filter((bId: string) => Types.ObjectId.isValid(bId))
+        .map((bId: string) => ({
+          bookId: new Types.ObjectId(bId),
+          addedAt: new Date(),
+        }));
     }
 
     await connectDB();

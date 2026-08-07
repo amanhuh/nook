@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItems } from "@/lib/config/nav";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -68,6 +69,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUser() {
@@ -77,7 +79,9 @@ export function AppSidebar() {
           const data = await res.json();
           setUser(data.user);
         }
-      } catch {}
+      } catch {} finally {
+        setIsLoading(false);
+      }
     }
     fetchUser();
   }, []);
@@ -135,73 +139,91 @@ export function AppSidebar() {
         </nav>
 
         <div className="p-3 border-t border-border shrink-0">
-          <div className="lg:hidden flex justify-center">
-            <Popover>
-              <PopoverTrigger
-                render={
-                  <button
-                    type="button"
-                    className="w-9 h-9 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0 hover:scale-105 transition-transform cursor-pointer shadow-xs"
-                  >
-                    {initial}
-                  </button>
-                }
-              />
-              <PopoverContent side="right" align="end" className="w-64 p-3 bg-card border-border shadow-xl space-y-3">
-                <div className="flex items-center gap-3 pb-3 border-b border-border/80">
-                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center shrink-0">
-                    {initial}
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-semibold text-foreground truncate">
-                      {user?.name || "Reading Corner"}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {user?.email || ""}
-                    </span>
-                  </div>
+          {isLoading ? (
+            <>
+              <div className="lg:hidden flex justify-center">
+                <Skeleton className="w-9 h-9 rounded-full shrink-0" />
+              </div>
+              <div className="hidden lg:flex items-center gap-2.5 w-full">
+                <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+                <div className="flex flex-col min-w-0 flex-1 space-y-1.5">
+                  <Skeleton className="h-3 w-24 rounded-xs" />
+                  <Skeleton className="h-2.5 w-32 rounded-xs" />
                 </div>
-                <form onSubmit={handleSignOut}>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2.5 w-full h-9 px-3 rounded-xl text-xs font-semibold text-error hover:bg-error/10 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4 text-error shrink-0" />
-                    <span>Sign out</span>
-                  </button>
-                </form>
-              </PopoverContent>
-            </Popover>
-          </div>
+                <Skeleton className="w-7 h-7 rounded-lg shrink-0" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="lg:hidden flex justify-center">
+                <Popover>
+                  <PopoverTrigger
+                    render={
+                      <button
+                        type="button"
+                        className="w-9 h-9 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0 hover:scale-105 transition-transform cursor-pointer shadow-xs"
+                      >
+                        {initial}
+                      </button>
+                    }
+                  />
+                  <PopoverContent side="right" align="end" className="w-64 p-3 bg-card border-border shadow-xl space-y-3">
+                    <div className="flex items-center gap-3 pb-3 border-b border-border/80">
+                      <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center shrink-0">
+                        {initial}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-semibold text-foreground truncate">
+                          {user?.name || "Reading Corner"}
+                        </span>
+                        <span className="text-xs text-muted-foreground truncate">
+                          {user?.email || ""}
+                        </span>
+                      </div>
+                    </div>
+                    <form onSubmit={handleSignOut}>
+                      <button
+                        type="submit"
+                        className="flex items-center gap-2.5 w-full h-9 px-3 rounded-xl text-xs font-semibold text-error hover:bg-error/10 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-error shrink-0" />
+                        <span>Sign out</span>
+                      </button>
+                    </form>
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-          <div className="hidden lg:flex items-center justify-between gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0">
-              {initial}
-            </div>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-xs font-semibold text-foreground truncate">
-                {user?.name || "Reading Corner"}
-              </span>
-              <span className="text-[10px] text-muted-foreground truncate">
-                {user?.email || ""}
-              </span>
-            </div>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <form onSubmit={handleSignOut}>
-                    <button
-                      type="submit"
-                      className="p-1.5 rounded-lg text-subtle hover:text-foreground hover:bg-muted transition-colors shrink-0 cursor-pointer"
-                    >
-                      <LogOut className="w-4 h-4" />
-                    </button>
-                  </form>
-                }
-              />
-              <TooltipContent side="right">Sign out</TooltipContent>
-            </Tooltip>
-          </div>
+              <div className="hidden lg:flex items-center justify-between gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0">
+                  {initial}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-xs font-semibold text-foreground truncate">
+                    {user?.name || "Reading Corner"}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground truncate">
+                    {user?.email || ""}
+                  </span>
+                </div>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <form onSubmit={handleSignOut}>
+                        <button
+                          type="submit"
+                          className="p-1.5 rounded-lg text-subtle hover:text-foreground hover:bg-muted transition-colors shrink-0 cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4" />
+                        </button>
+                      </form>
+                    }
+                  />
+                  <TooltipContent side="right">Sign out</TooltipContent>
+                </Tooltip>
+              </div>
+            </>
+          )}
         </div>
       </aside>
     </TooltipProvider>

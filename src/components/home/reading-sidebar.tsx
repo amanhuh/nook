@@ -20,12 +20,12 @@ export function ReadingSidebar({ books, onBookChange }: ReadingSidebarProps) {
     <aside className="hidden lg:block lg:sticky lg:top-8 shrink-0 w-full p-6 rounded-3xl bg-card border border-border/80 shadow-xs space-y-6">
       <div className="space-y-4">
         <h3 className="text-[17px] font-bold font-display text-foreground tracking-tight">
-          Your Reading at a Glance
+          Your reading at a glance
         </h3>
 
         <div className="space-y-3.5">
           <div className="flex items-center gap-4 p-2 rounded-2xl transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-[#FFF4ED] text-[#F97316] flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl border border-[#F97316] text-[#F97316] flex items-center justify-center shrink-0">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
@@ -42,7 +42,7 @@ export function ReadingSidebar({ books, onBookChange }: ReadingSidebarProps) {
           </div>
 
           <div className="flex items-center gap-4 p-2 rounded-2xl transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl border border-[#10B981] text-[#10B981] flex items-center justify-center shrink-0">
               <Sprout className="w-6 h-6" />
             </div>
             <div>
@@ -59,7 +59,7 @@ export function ReadingSidebar({ books, onBookChange }: ReadingSidebarProps) {
           </div>
 
           <div className="flex items-center gap-4 p-2 rounded-2xl transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-[#F3E8FF] text-[#9333EA] flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl border border-[#9333EA] text-[#9333EA] flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
