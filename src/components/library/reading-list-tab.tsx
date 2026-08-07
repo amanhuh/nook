@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Bookmark } from "lucide-react";
+import { Plus } from "lucide-react";
 import { BookItem, BookStatus } from "@/types/books";
 import { BOOK_STATUS_LIST, BOOK_STATUS_CONFIG } from "@/lib/books";
 import { BookCard } from "@/components/books/book-card";
@@ -36,14 +36,15 @@ export function ReadingListTab({
           const statusBooks = books.filter((b) => b.status === id);
           const isSelected = selectedStatus === id;
           const previewCovers = statusBooks
-            .filter((b) => b.coverUrl)
+            .map((b) => b.coverUrl)
+            .filter((url): url is string => Boolean(url))
             .slice(0, 3);
 
           return (
             <div
               key={id}
               onClick={() => onSelectStatus(isSelected ? "ALL" : id)}
-              className={`p-5 rounded-3xl border transition-all cursor-pointer flex items-center justify-between min-h-36 relative overflow-hidden group shrink-0 w-65 sm:w-auto snap-start ${
+              className={`p-5 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between min-h-36 relative overflow-hidden group shrink-0 w-68 sm:w-auto snap-start ${
                 isSelected
                   ? "bg-card border-foreground shadow-sm"
                   : "bg-card border-border/80 hover:border-border hover:shadow-xs"
@@ -58,23 +59,34 @@ export function ReadingListTab({
                 </p>
               </div>
 
-              <div className="flex items-center -space-x-4 z-10 shrink-0">
-                {previewCovers.length > 0 ? (
-                  previewCovers.map((b, idx) => (
-                    <div
-                      key={b.id}
-                      style={{ zIndex: 10 - idx }}
-                      className="w-12 h-16 rounded-lg overflow-hidden border border-background shadow-sm transition-transform group-hover:scale-105"
-                    >
-                      <BookCover src={b.coverUrl} className="w-full h-full" />
-                    </div>
-                  ))
-                ) : (
-                  <div className="w-12 h-16 rounded-lg border border-dashed border-border/80 bg-muted/20 flex items-center justify-center text-muted-foreground/50">
-                    <Bookmark className="w-4 h-4" />
+              {previewCovers.length > 0 && (
+                <div className="absolute -right-3 -bottom-1.5 h-full flex items-end justify-end pointer-events-none z-10 overflow-hidden pr-2">
+                  <div className="relative flex items-end gap-1.5 h-full">
+                    <div className="absolute inset-0 bg-linear-to-b from-card/30 via-transparent to-transparent z-20 pointer-events-none" />
+
+                    {previewCovers.length >= 3 ? (
+                      <>
+                        <div className="flex flex-col gap-1 h-[85%] justify-end pb-0 w-11 sm:w-12 shrink-0 z-10">
+                          <div className="h-1/2 w-full overflow-hidden shadow-md">
+                            <BookCover src={previewCovers[0]} className="w-full rounded-sm" />
+                          </div>
+                          <div className="h-1/2 w-full overflow-hidden shadow-md">
+                            <BookCover src={previewCovers[1]} className="w-full rounded-sm" />
+                          </div>
+                        </div>
+
+                        <div className="h-[95%] shadow-xl overflow-hidden shrink-0 z-10">
+                          <BookCover src={previewCovers[2]} className="h-full rounded-sm" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="h-[95%] shadow-xl overflow-hidden shrink-0 z-10">
+                        <BookCover src={previewCovers[0]} className="h-full rounded-sm" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           );
         })}

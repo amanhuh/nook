@@ -14,15 +14,15 @@ export function AuthHeroCovers() {
   const col3Covers = [...col3Base, ...col3Base];
 
   return (
-    <div className="hidden lg:flex relative overflow-hidden lg:w-[45%] h-screen shrink-0 border-r border-border">
-      <div className="absolute inset-x-0 top-0 h-36 bg-linear-to-b from-background via-background/80 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-36 bg-linear-to-t from-background via-background/80 to-transparent z-10 pointer-events-none" />
+    <div className="hidden lg:flex relative overflow-hidden lg:w-[45%] h-screen shrink-0">
+      <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background via-background/50 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-background via-background/50 to-transparent z-10 pointer-events-none" />
 
-      <div className="w-full h-full absolute inset-0 grid grid-cols-3 gap-5 p-6 opacity-80">
+      <div className="w-full h-full absolute inset-0 grid grid-cols-3 gap-5 px-6 opacity-80">
         <div className="h-full overflow-hidden relative">
           <motion.div
             animate={{ y: ["0%", "-50%"] }}
-            transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
             className="flex flex-col gap-5 pt-0"
           >
             {col1Covers.map((cover, i) => (
@@ -45,9 +45,9 @@ export function AuthHeroCovers() {
 
         <div className="h-full overflow-hidden relative">
           <motion.div
-            animate={{ y: ["-50%", "0%"] }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="flex flex-col gap-5 pt-12"
+            animate={{ y: ["-25%", "-75%"] }}
+            transition={{ duration: 65, repeat: Infinity, ease: "linear" }}
+            className="flex flex-col gap-5"
           >
             {col2Covers.map((cover, i) => (
               <div
@@ -69,9 +69,9 @@ export function AuthHeroCovers() {
 
         <div className="h-full overflow-hidden relative">
           <motion.div
-            animate={{ y: ["0%", "-50%"] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="flex flex-col gap-5 pt-6"
+            animate={{ y: ["-12.5%", "-62.5%"] }}
+            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+            className="flex flex-col gap-5"
           >
             {col3Covers.map((cover, i) => (
               <div

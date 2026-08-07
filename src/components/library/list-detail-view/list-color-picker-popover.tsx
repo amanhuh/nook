@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
+import { Palette, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Tooltip,
@@ -46,10 +47,36 @@ export function ListColorPickerPopover({
     };
   }, [isColorPickerOpen, onCloseColorPicker]);
 
-  const animX = isMobile ? -12 : 12;
+  const animX = isMobile ? 12 : -12;
 
   return (
     <div ref={colorPickerRef} className="flex items-center gap-1.5 relative">
+      <TooltipProvider delay={400}>
+        <Tooltip>
+          <TooltipTrigger render={
+            <button
+              type="button"
+              disabled={isUpdatingColor}
+              onClick={onToggleColorPicker}
+              style={{ backgroundColor: currentColorHex }}
+              className={`w-8 h-8 rounded-full border border-black/15 shadow-2xs hover:scale-108 active:scale-95 transition-all cursor-pointer shrink-0 flex items-center justify-center group relative ${
+                isMobile ? "order-1" : "order-2"
+              } ${isUpdatingColor ? "opacity-90 cursor-wait" : ""}`}
+              aria-label="Change list color"
+            >
+              {isUpdatingColor ? (
+                <Loader2 className="w-4 h-4 text-foreground/80 animate-spin" />
+              ) : (
+                <Palette className="w-4 h-4 text-foreground/80 group-hover:rotate-12 transition-transform drop-shadow-2xs" />
+              )}
+            </button>
+          } />
+          <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+            {isUpdatingColor ? "Updating color..." : "Change color"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <AnimatePresence>
         {isColorPickerOpen && (
           <motion.div
@@ -58,7 +85,7 @@ export function ListColorPickerPopover({
             exit={{ opacity: 0, scale: 0.9, x: animX }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
             className={`flex items-center gap-2 p-1.5 rounded-full bg-card/90 backdrop-blur-md border border-border/80 shadow-lg ${
-              isMobile ? "order-1" : ""
+              isMobile ? "order-2" : "order-1"
             }`}
           >
             <TooltipProvider delay={400}>
@@ -90,25 +117,6 @@ export function ListColorPickerPopover({
           </motion.div>
         )}
       </AnimatePresence>
-
-      <TooltipProvider delay={400}>
-        <Tooltip>
-          <TooltipTrigger render={
-            <button
-              type="button"
-              onClick={onToggleColorPicker}
-              style={{ backgroundColor: currentColorHex }}
-              className={`w-7 h-7 rounded-full border border-black/10 shadow-xs hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 ${
-                isMobile ? "order-2" : ""
-              }`}
-              aria-label="Change list color"
-            />
-          } />
-          <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
-            Change color
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     </div>
   );
 }

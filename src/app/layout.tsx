@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Nook — Your personal reading corner",
   description:
     "Track your reading life. Add books, organize collections, and celebrate every finished page.",
+  icons: {
+    icon: "/nook-logo.svg",
+  },
 };
 
 export default function RootLayout({

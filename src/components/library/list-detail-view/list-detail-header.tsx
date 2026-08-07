@@ -36,7 +36,7 @@ export function ListDetailHeader({
 }: ListDetailHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 z-10">
         <button
           type="button"
           onClick={onBack}
@@ -50,7 +50,7 @@ export function ListDetailHeader({
         </h2>
       </div>
 
-      <div className="flex items-center justify-between sm:justify-start gap-3 relative">
+      <div className="flex items-center justify-start gap-2.5 relative z-10">
         {isMobile ? (
           <>
             <TooltipProvider delay={400}>

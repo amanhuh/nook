@@ -16,6 +16,8 @@ interface BookCoverProps {
   index?: number;
   className?: string;
   children?: React.ReactNode;
+  priority?: boolean;
+  loading?: "eager" | "lazy";
 }
 
 export function BookCover({
@@ -25,8 +27,11 @@ export function BookCover({
   index,
   className,
   children,
+  priority,
+  loading = "eager",
 }: BookCoverProps) {
   const imageUrl = src ?? (index !== undefined ? getCoverByIndex(index).url : undefined);
+  const isEager = priority || loading === "eager";
 
   const coverElement = (
     <div
@@ -44,6 +49,8 @@ export function BookCover({
           alt={alt || title || "Book cover"}
           fill
           unoptimized
+          priority={isEager}
+          loading={isEager ? "eager" : "lazy"}
           sizes="(max-width: 768px) 100px, 200px"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />

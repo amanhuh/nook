@@ -1,11 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SignUpForm } from "@/components/auth";
 
 export default function SignUpPage() {
   return (
     <div className="space-y-6">
-      <Link href="/" className="inline-block mb-2 lg:hidden">
-        <span className="text-2xl font-bold text-foreground font-display tracking-tight">
+      <Link href="/home" className="inline-flex items-center gap-2.5 mb-2">
+        <Image
+          src="/nook-logo.svg"
+          alt="Nook logo"
+          width={36}
+          height={36}
+          priority
+          className="w-7 h-7 object-contain"
+        />
+        <span className="text-lg sm:text-xl font-bold text-foreground font-display tracking-tight">
           Nook
         </span>
       </Link>

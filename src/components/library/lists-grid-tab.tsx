@@ -183,10 +183,8 @@ export function ListsGridTab({
     <div className="space-y-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         <AddListDrawer onListCreated={onListCreated}>
-          <div className="h-64 sm:h-72 rounded-3xl border-2 border-dashed border-border bg-card/40 hover:bg-muted/70 hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-muted/60 text-foreground flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Plus className="w-6 h-6" />
-            </div>
+          <div className="h-64 sm:h-72 rounded-3xl border-2 border-dashed border-border bg-card/40 hover:bg-muted/70 hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center gap-2 group">
+            <Plus className="w-7 h-7 text-muted-foreground group-hover:text-foreground transition-colors" />
             <span className="text-sm font-bold text-foreground">
               Create List
             </span>

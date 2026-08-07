@@ -96,7 +96,7 @@ export function ReadingSidebar({ books, onBookChange }: ReadingSidebarProps) {
                     Add a Book
                   </p>
                   <p className="text-[11px] text-muted-foreground truncate">
-                    Search Google Books or add manually
+                    Search or add books manually
                   </p>
                 </div>
               </div>

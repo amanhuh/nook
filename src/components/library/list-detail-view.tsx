@@ -103,7 +103,6 @@ export function ListDetailView({
       });
 
       if (res.ok) {
-        toast.success("List color updated!");
         onBookChange();
       } else {
         toast.error("Failed to update list color.");
@@ -117,7 +116,14 @@ export function ListDetailView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {selectedList.color && (
+        <div
+          style={{ backgroundColor: selectedList.color }}
+          className="absolute -top-10 inset-x-0 h-40 opacity-20 dark:opacity-15 blur-3xl pointer-events-none transition-colors duration-500 rounded-full z-0"
+        />
+      )}
+
       <ListDetailHeader
         selectedList={selectedList}
         isMobile={isMobile}
@@ -130,7 +136,7 @@ export function ListDetailView({
         onOpenDeleteModal={() => setIsDeleteModalOpen(true)}
       />
 
-      <div className="space-y-4 pt-2">
+      <div className="space-y-4 pt-2 relative z-10">
         <ListMultiSelectToolbar
           totalBooksCount={selectedListBooks.length}
           selectedCount={selectedBookIds.length}
