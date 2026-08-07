@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronsUpDown, Calendar, FileText, Loader2 } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createBookSchema, type CreateBookInput } from "@/lib/validations/book";
-import { GoogleBookSearchResult } from "@/types/books";
+import { GoogleBookSearchResult, BookStatus } from "@/types/books";
 import { TAG_LIMITS } from "@/lib/books";
 
 import { BookTitleSearch } from "./add-book-drawer/book-title-search";
@@ -35,10 +35,11 @@ import { BookCollectionSelect } from "./add-book-drawer/book-collection-select";
 
 interface AddBookDrawerProps {
   children: React.ReactNode;
+  defaultStatus?: BookStatus;
   onBookChange?: () => void;
 }
 
-export function AddBookDrawer({ children, onBookChange }: AddBookDrawerProps) {
+export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBookDrawerProps) {
   const [open, setOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
@@ -63,12 +64,18 @@ export function AddBookDrawer({ children, onBookChange }: AddBookDrawerProps) {
       googleBookId: "",
       pageCount: undefined as number | undefined,
       publishedDate: undefined as number | undefined,
-      status: "WANT_TO_READ" as const,
+      status: (defaultStatus || "WANT_TO_READ") as BookStatus,
       tags: [] as string[],
       note: "",
       lists: [] as string[],
     },
   });
+
+  useEffect(() => {
+    if (defaultStatus) {
+      setValue("status", defaultStatus);
+    }
+  }, [defaultStatus, setValue]);
 
   const coverUrl = watch("coverUrl");
   const authorsArray = watch("authors") || [];
@@ -108,7 +115,19 @@ export function AddBookDrawer({ children, onBookChange }: AddBookDrawerProps) {
   const handleOpenChange = (nextOpen: boolean) => {
     if (isSubmitting) return;
     if (!nextOpen) {
-      reset();
+      reset({
+        title: "",
+        authors: [""],
+        description: "",
+        coverUrl: "",
+        googleBookId: "",
+        pageCount: undefined,
+        publishedDate: undefined,
+        status: (defaultStatus || "WANT_TO_READ") as BookStatus,
+        tags: [],
+        note: "",
+        lists: [],
+      });
       clearErrors();
       setIsLocked(false);
     }
@@ -125,7 +144,19 @@ export function AddBookDrawer({ children, onBookChange }: AddBookDrawerProps) {
 
       if (res.ok) {
         toast.success("Book saved to your library!");
-        reset();
+        reset({
+          title: "",
+          authors: [""],
+          description: "",
+          coverUrl: "",
+          googleBookId: "",
+          pageCount: undefined,
+          publishedDate: undefined,
+          status: (defaultStatus || "WANT_TO_READ") as BookStatus,
+          tags: [],
+          note: "",
+          lists: [],
+        });
         setIsLocked(false);
         setOpen(false);
         onBookChange?.();

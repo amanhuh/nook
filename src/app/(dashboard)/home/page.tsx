@@ -7,6 +7,7 @@ import { BookItem } from "@/types/books";
 import { BOOK_STATUS_LIST } from "@/lib/books";
 import { BookStatusSection } from "@/components/books/book-status-section";
 import { AddBookDrawer } from "@/components/books/add-book-drawer";
+import { ReadingSidebar } from "@/components/home/reading-sidebar";
 import { Button } from "@/components/ui/button";
 
 type UserData = {
@@ -50,18 +51,18 @@ export default function HomePage() {
     <div className="pb-12">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start">
         <div className="space-y-8 min-w-0">
-          <div className="relative h-48 sm:h-68 p-6 sm:p-8 rounded-3xl overflow-hidden bg-[#FCEFD9] shadow shadow-gray-400/20">
-            <div className="relative space-y-2 z-10 max-w-md">
+          <div className="relative h-48 sm:h-68 p-6 sm:p-8 rounded-3xl overflow-hidden bg-[#FCEFD9] shadow shadow-gray-400/20 flex flex-col justify-center">
+            <div className="relative z-10 max-w-md flex flex-col items-start gap-2.5 sm:gap-3.5">
               <h2 className="text-xl sm:text-2xl md:text-4xl font-bold font-display text-foreground/90 tracking-tight leading-tight">
                 Welcome Back, {firstName}
               </h2>
-              <p className="text-base sm:text-lg font-semibold font-body text-muted-foreground mt-4 tracking-tight mb-auto">
+              <p className="text-sm sm:text-base md:text-lg font-medium text-muted-foreground tracking-tight">
                 What are you reading today?
               </p>
               <AddBookDrawer onBookChange={fetchBooks}>
-                <Button className="mt-4 bg-foreground text-background rounded-lg hover:bg-foreground/90 py-5 md:py-6 px-5 md:px-8 cursor-pointer">
+                <Button className="mt-1 bg-foreground text-background rounded-xl hover:bg-foreground/90 h-10 sm:h-11 px-5 text-xs sm:text-sm font-semibold cursor-pointer">
                   Add a Book
-                  <Plus className="ml-1.5" />
+                  <Plus className="ml-1.5 w-4 h-4" />
                 </Button>
               </AddBookDrawer>
             </div>
@@ -102,23 +103,7 @@ export default function HomePage() {
           )}
         </div>
 
-        <aside className="hidden lg:block lg:sticky lg:top-10 lg:h-[calc(100vh-5rem)] shrink-0 w-full p-6 rounded-3xl bg-card border border-border/80 shadow-xs">
-          <div className="w-full">
-            <p className="text-lg font-bold font-display text-foreground tracking-tight mb-2">
-              Daily Reminder
-            </p>
-            <Image
-              src="/images/sun_illustration.png"
-              alt="daily_reminder"
-              width={1536}
-              height={1024}
-              className="w-full h-auto select-none pointer-events-none"
-            />
-            <p className="text-base font-semibold font-body text-foreground tracking-tight text-center px-10">
-              Every page you read today builds a better you tomorrow.
-            </p>
-          </div>
-        </aside>
+        <ReadingSidebar books={books} onBookChange={fetchBooks} />
       </div>
     </div>
   );

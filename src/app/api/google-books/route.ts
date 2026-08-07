@@ -67,6 +67,9 @@ export async function GET(req: NextRequest) {
         imageLinks.thumbnail ||
         rawCoverUrl;
 
+      console.log(rawCoverUrl)
+      console.log(rawSmallCoverUrl)
+      
       const rawCategories = info.categories || [];
       const parsedCategoriesSet = new Set<string>();
 
