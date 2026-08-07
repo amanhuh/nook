@@ -95,12 +95,10 @@ export function SignInForm() {
             {...register("password")}
             className="h-11 pl-4 pr-12 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-subtle focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-foreground transition-all"
           />
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-1 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground h-9 w-9"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-lg text-subtle hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -108,7 +106,7 @@ export function SignInForm() {
             ) : (
               <Eye className="w-4 h-4" />
             )}
-          </Button>
+          </button>
         </div>
         {errors.password && (
           <FieldError className="text-xs text-red-500 pl-1 font-medium">

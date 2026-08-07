@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { verifyToken } from "@/lib/auth";
 import { COOKIE_NAME } from "@/lib/cookies";
+import { LIST_COLORS } from "@/lib/constants";
 import List from "@/models/List";
 
 export async function GET(
@@ -45,6 +46,71 @@ export async function GET(
     return NextResponse.json({ list });
   } catch (err) {
     console.error("GET /api/lists/[id] Error:", err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    if (!id || id === "undefined") {
+      return NextResponse.json({ error: "Invalid collection ID." }, { status: 400 });
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const userId = await verifyToken(token);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const updates: { name?: string; color?: string } = {};
+
+    if (body.name && typeof body.name === "string") {
+      updates.name = body.name.trim();
+    }
+
+    if (body.colorName && LIST_COLORS[body.colorName]) {
+      updates.color = LIST_COLORS[body.colorName].hex;
+    } else if (body.color && typeof body.color === "string") {
+      updates.color = body.color;
+    }
+
+    await connectDB();
+
+    const doc = await List.findOneAndUpdate(
+      { _id: id, userId },
+      { $set: updates },
+      { new: true }
+    );
+
+    if (!doc) {
+      return NextResponse.json({ error: "Collection not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      list: {
+        id: doc._id.toString(),
+        name: doc.name,
+        color: doc.color,
+        bookCount: doc.books ? doc.books.length : 0,
+        books: doc.books || [],
+      },
+    });
+  } catch (err) {
+    console.error("PATCH /api/lists/[id] Error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

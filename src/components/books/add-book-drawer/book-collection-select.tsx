@@ -15,6 +15,7 @@ import {
 export interface CollectionOption {
   id: string;
   name: string;
+  color?: string;
   bookCount: number;
 }
 
@@ -67,6 +68,7 @@ export function BookCollectionSelect({
   }, []);
 
   const selectedCollection = collections.find((c) => c.id === value);
+  const hasCustomColor = Boolean(selectedCollection?.color && selectedCollection.color !== "#C7CED9");
 
   const triggerError = (msg: string) => {
     setError(msg);
@@ -78,17 +80,17 @@ export function BookCollectionSelect({
     const trimmed = newCollectionName.trim();
 
     if (!trimmed) {
-      triggerError("Collection name cannot be empty");
+      triggerError("List name cannot be empty");
       return;
     }
 
     if (collections.some((c) => c.name.toLowerCase() === trimmed.toLowerCase())) {
-      triggerError("Collection already exists");
+      triggerError("List already exists");
       return;
     }
 
-    if (trimmed.length > 30) {
-      triggerError("Collection name must be 30 characters or less");
+    if (trimmed.length > 35) {
+      triggerError("List name must be 35 characters or less");
       return;
     }
 
@@ -96,7 +98,7 @@ export function BookCollectionSelect({
       const res = await fetch("/api/lists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmed }),
+        body: JSON.stringify({ name: trimmed, colorName: "Slate", books: [] }),
       });
 
       if (res.ok) {
@@ -112,34 +114,46 @@ export function BookCollectionSelect({
         setIsCreating(false);
       } else {
         const data = await res.json();
-        triggerError(data.error || "Failed to create collection");
+        triggerError(data.error || "Failed to create list");
       }
     } catch {
-      triggerError("Failed to create collection");
+      triggerError("Failed to create list");
     }
   };
 
   return (
     <div className="space-y-2">
       <label className="text-xs font-semibold font-display text-foreground block">
-        Collection
+        List
       </label>
 
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full h-10 px-4 rounded-xl border border-border/60 bg-card text-foreground flex items-center justify-between text-sm hover:border-border transition-all cursor-pointer"
+          style={{ backgroundColor: hasCustomColor ? selectedCollection?.color : undefined }}
+          className={`w-full h-10 px-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-sm ${
+            hasCustomColor
+              ? "border-black/10 text-foreground font-semibold shadow-xs"
+              : "border-border/60 bg-card text-foreground hover:border-border"
+          }`}
         >
           <div className="flex items-center gap-2 min-w-0 pr-2">
-            <Folder className="w-4 h-4 text-muted-foreground shrink-0" />
+            {hasCustomColor ? (
+              <div
+                style={{ backgroundColor: selectedCollection?.color }}
+                className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
+              />
+            ) : (
+              <Folder className="w-4 h-4 text-muted-foreground shrink-0" />
+            )}
             <span
               title={selectedCollection?.name}
               className={`truncate max-w-44 sm:max-w-64 ${
-                selectedCollection ? "font-medium" : "text-muted-foreground"
+                selectedCollection ? "font-semibold" : "text-muted-foreground font-normal"
               }`}
             >
-              {selectedCollection ? selectedCollection.name : "Select a collection"}
+              {selectedCollection ? selectedCollection.name : "Select a list"}
             </span>
           </div>
           <motion.div
@@ -147,7 +161,7 @@ export function BookCollectionSelect({
             transition={{ duration: 0.2 }}
             className="shrink-0"
           >
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            <ChevronDown className="w-4 h-4 text-foreground/70" />
           </motion.div>
         </button>
 
@@ -172,7 +186,7 @@ export function BookCollectionSelect({
                         >
                           <Input
                             type="text"
-                            placeholder="Collection name..."
+                            placeholder="List name..."
                             value={newCollectionName}
                             onChange={(e) => {
                               setNewCollectionName(e.target.value);
@@ -240,7 +254,7 @@ export function BookCollectionSelect({
                     <div className="w-6 h-6 rounded-lg border border-border/60 bg-muted/40 flex items-center justify-center text-foreground shrink-0">
                       <Plus className="w-3.5 h-3.5" />
                     </div>
-                    <span>Create collection</span>
+                    <span>Create list</span>
                   </button>
                 )}
 
@@ -249,6 +263,8 @@ export function BookCollectionSelect({
                 <div className="max-h-56 overflow-y-auto space-y-0.5 pr-1">
                   {collections.map((c) => {
                     const isSelected = value === c.id;
+                    const cHasCustomColor = Boolean(c.color && c.color !== "#C7CED9");
+
                     return (
                       <button
                         key={c.id}
@@ -262,7 +278,14 @@ export function BookCollectionSelect({
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                          <Folder className={`w-4 h-4 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                          {cHasCustomColor ? (
+                            <div
+                              style={{ backgroundColor: c.color }}
+                              className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+                            />
+                          ) : (
+                            <Folder className={`w-4 h-4 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                          )}
                           <span title={c.name} className="text-foreground truncate max-w-36 sm:max-w-44">
                             {c.name}
                           </span>

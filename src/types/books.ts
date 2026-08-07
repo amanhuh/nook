@@ -8,6 +8,7 @@ export interface BookItem {
   status: BookStatus;
   pageCount?: number;
   currentPage?: number;
+  lists?: string[];
   createdAt?: string | Date;
 }
 

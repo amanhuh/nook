@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Loader2, X, BookOpen } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -64,6 +65,7 @@ export function BookTitleSearch({
 
     const timer = setTimeout(async () => {
       setLoading(true);
+      setOpen(true);
       try {
         const res = await fetch(
           `/api/google-books?q=${encodeURIComponent(query.trim())}`,
@@ -105,7 +107,7 @@ export function BookTitleSearch({
     setResults([]);
   };
 
-  const showResults = open && results.length > 0 && !isLocked;
+  const showResults = open && !isLocked;
 
   return (
     <div className="space-y-1.5 relative">
@@ -159,40 +161,52 @@ export function BookTitleSearch({
 
         {showResults && (
           <div className="absolute left-0 right-0 top-full z-50 mt-1.5 rounded-2xl bg-card border border-border/80 shadow-xl max-h-64 overflow-y-auto space-y-0.5 p-1.5">
-            {results.map((book) => (
-              <button
-                key={book.id}
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  handleSelect(book);
-                }}
-                className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-muted/60 transition-colors text-left cursor-pointer group"
-              >
-                <div className="w-9 h-12 rounded-lg bg-muted border border-border/60 shrink-0 overflow-hidden relative flex items-center justify-center">
-                  {book.smallCoverUrl || book.coverUrl ? (
-                    <Image
-                      src={book.smallCoverUrl || book.coverUrl}
-                      alt={book.title}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                      sizes="36px"
-                    />
-                  ) : (
-                    <BookOpen className="w-4 h-4 text-muted-foreground" />
-                  )}
+            {loading ? (
+              [1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-2">
+                  <Skeleton className="w-9 h-12 rounded-lg shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3.5 w-3/4 rounded-md" />
+                    <Skeleton className="h-3 w-1/2 rounded-md" />
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
-                    {book.title}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground truncate">
-                    {book.authors.length > 0 ? book.authors.join(", ") : "Unknown Author"}
-                  </p>
-                </div>
-              </button>
-            ))}
+              ))
+            ) : (
+              results.map((book) => (
+                <button
+                  key={book.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSelect(book);
+                  }}
+                  className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-muted/60 transition-colors text-left cursor-pointer group"
+                >
+                  <div className="w-9 h-12 rounded-lg bg-muted border border-border/60 shrink-0 overflow-hidden relative flex items-center justify-center">
+                    {book.smallCoverUrl || book.coverUrl ? (
+                      <Image
+                        src={book.smallCoverUrl || book.coverUrl}
+                        alt={book.title}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                        sizes="36px"
+                      />
+                    ) : (
+                      <BookOpen className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
+                      {book.title}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {book.authors.length > 0 ? book.authors.join(", ") : "Unknown Author"}
+                    </p>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>

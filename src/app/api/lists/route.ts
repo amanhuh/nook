@@ -24,14 +24,28 @@ export async function GET() {
 
     await connectDB();
 
-    const listsDocs = await List.find({ userId }).sort({ createdAt: -1 });
-    const lists = listsDocs.map((doc) => ({
-      id: doc._id.toString(),
-      name: doc.name,
-      color: doc.color || "#C7CED9",
-      bookCount: doc.books ? doc.books.length : 0,
-      books: doc.books || [],
-    }));
+    const listsDocs = await List.find({ userId })
+      .populate("books.bookId", "title coverUrl status")
+      .sort({ createdAt: -1 });
+
+    const lists = listsDocs.map((doc) => {
+      const booksList = (doc.books || []).map((b: { bookId: unknown; addedAt: Date }) => {
+        const bookObj = typeof b.bookId === "object" && b.bookId !== null ? (b.bookId as { _id?: Types.ObjectId; title?: string; coverUrl?: string }) : null;
+        return {
+          bookId: bookObj?._id ? bookObj._id.toString() : b.bookId?.toString() || "",
+          title: bookObj?.title || "",
+          coverUrl: bookObj?.coverUrl || "",
+        };
+      });
+
+      return {
+        id: doc._id.toString(),
+        name: doc.name,
+        color: doc.color || "#C7CED9",
+        bookCount: booksList.length,
+        books: booksList,
+      };
+    });
 
     return NextResponse.json({ lists });
   } catch (err) {
@@ -58,7 +72,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const result = createListSchema.safeParse(body);
+    const payload = {
+      name: body.name,
+      colorName: body.colorName || "Slate",
+      books: Array.isArray(body.books) ? body.books : [],
+    };
+
+    const result = createListSchema.safeParse(payload);
 
     if (!result.success) {
       return NextResponse.json(

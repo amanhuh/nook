@@ -8,6 +8,7 @@ import { BOOK_STATUS_LIST } from "@/lib/books";
 import { BookStatusSection } from "@/components/books/book-status-section";
 import { AddBookDrawer } from "@/components/books/add-book-drawer";
 import { ReadingSidebar } from "@/components/home/reading-sidebar";
+import { HomeSkeleton } from "@/components/skeletons/home-skeleton";
 import { Button } from "@/components/ui/button";
 
 type UserData = {
@@ -19,6 +20,7 @@ type UserData = {
 export default function HomePage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [books, setBooks] = useState<BookItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchBooks = useCallback(async () => {
     try {
@@ -31,21 +33,36 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    async function fetchUser() {
+    async function loadInitialData() {
       try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
+        const [userRes, booksRes] = await Promise.all([
+          fetch("/api/auth/me"),
+          fetch("/api/books"),
+        ]);
+
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUser(userData.user);
         }
-      } catch {}
+
+        if (booksRes.ok) {
+          const booksData = await booksRes.json();
+          setBooks(booksData.books || []);
+        }
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     }
-    fetchUser();
-    fetchBooks();
-  }, [fetchBooks]);
+    loadInitialData();
+  }, []);
 
   const firstName = user?.name ? user.name.split(" ")[0] : "";
   const hasAnyBooks = books.length > 0;
+
+  if (loading) {
+    return <HomeSkeleton />;
+  }
 
   return (
     <div className="pb-12">
