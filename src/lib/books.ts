@@ -46,5 +46,5 @@ export const BOOK_STATUS_LIST: BookStatusMeta[] = Object.values(BOOK_STATUS_CONF
 
 export const TAG_LIMITS = {
   MAX_TAGS: 25,
-  MAX_TAG_LENGTH: 20,
+  MAX_TAG_LENGTH: 40,
 } as const;

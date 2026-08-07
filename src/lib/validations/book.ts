@@ -23,15 +23,15 @@ export const createBookSchema = z.object({
     .url("Cover URL must be a valid URL.")
     .or(z.literal(""))
     .optional(),
-  categories: z.array(z.string().trim()).default([]),
+  categories: z.array(z.string().trim()),
   pageCount: z
     .number()
     .int("Page count must be a whole number.")
     .positive("Page count must be greater than zero.")
     .optional(),
   publishedDate: z.number().int().optional(),
-  status: bookStatusSchema.default("WANT_TO_READ"),
-  lists: z.array(z.string()).default([]),
+  status: bookStatusSchema,
+  lists: z.array(z.string()),
   note: z.string().max(2000, "Note cannot exceed 2000 characters.").optional().or(z.literal("")),
   tags: z
     .array(
@@ -44,8 +44,7 @@ export const createBookSchema = z.object({
           `Tag cannot exceed ${TAG_LIMITS.MAX_TAG_LENGTH} characters.`
         )
     )
-    .max(TAG_LIMITS.MAX_TAGS, `Maximum ${TAG_LIMITS.MAX_TAGS} tags allowed.`)
-    .default([]),
+    .max(TAG_LIMITS.MAX_TAGS, `Maximum ${TAG_LIMITS.MAX_TAGS} tags allowed.`),
 });
 
 export const updateBookSchema = createBookSchema.partial().extend({

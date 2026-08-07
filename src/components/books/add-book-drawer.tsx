@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronsUpDown, Calendar, FileText, Loader2 } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -54,7 +54,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
     watch,
     clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<CreateBookInput>({
     resolver: zodResolver(createBookSchema),
     defaultValues: {
       title: "",
@@ -64,6 +64,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
       googleBookId: "",
       pageCount: undefined as number | undefined,
       publishedDate: undefined as number | undefined,
+      categories: [],
       status: (defaultStatus || "WANT_TO_READ") as BookStatus,
       tags: [] as string[],
       note: "",
@@ -92,8 +93,13 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
     setValue("googleBookId", book.googleBookId || "");
     setValue("pageCount", book.pageCount);
     setValue("publishedDate", book.publishedDate);
+    setValue("categories", book.categories || []);
     if (book.categories && book.categories.length > 0) {
-      setValue("tags", book.categories.slice(0, TAG_LIMITS.MAX_TAGS));
+      const sanitizedTags = book.categories
+        .slice(0, TAG_LIMITS.MAX_TAGS)
+        .map((cat) => cat.slice(0, TAG_LIMITS.MAX_TAG_LENGTH).trim())
+        .filter(Boolean);
+      setValue("tags", sanitizedTags);
     }
     clearErrors();
     setIsLocked(true);
@@ -107,6 +113,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
     setValue("googleBookId", "");
     setValue("pageCount", undefined);
     setValue("publishedDate", undefined);
+    setValue("categories", []);
     setValue("tags", []);
     clearErrors();
     setIsLocked(false);
@@ -123,6 +130,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
         googleBookId: "",
         pageCount: undefined,
         publishedDate: undefined,
+        categories: [],
         status: (defaultStatus || "WANT_TO_READ") as BookStatus,
         tags: [],
         note: "",
@@ -152,6 +160,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
           googleBookId: "",
           pageCount: undefined,
           publishedDate: undefined,
+          categories: [],
           status: (defaultStatus || "WANT_TO_READ") as BookStatus,
           tags: [],
           note: "",
@@ -166,6 +175,15 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
       }
     } catch {
       toast.error("Failed to save book. Please try again.");
+    }
+  };
+
+  const onInvalid = (formErrors: FieldErrors<CreateBookInput>) => {
+    const errorEntries = Object.entries(formErrors);
+    if (errorEntries.length > 0) {
+      const [, errObj] = errorEntries[0];
+      const message = (errObj as { message?: string })?.message || "Please fix form validation errors.";
+      toast.error(message);
     }
   };
 
@@ -184,7 +202,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
           </DrawerTitle>
         </DrawerHeader>
 
-        <form id="add-book-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col px-4 md:px-6 gap-6 min-h-0 flex-1 overflow-y-auto pr-1">
+        <form id="add-book-form" onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col px-4 md:px-6 gap-6 min-h-0 flex-1 overflow-y-auto pr-1">
           <fieldset disabled={isSubmitting} className="contents">
             <div className="flex flex-col sm:flex-row gap-5 items-start">
               <div className="flex sm:flex-col gap-4 items-start shrink-0 w-full sm:w-32">
