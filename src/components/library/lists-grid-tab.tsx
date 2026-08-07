@@ -49,7 +49,7 @@ const leftCoverVariants: Variants = {
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
   },
   hover: {
-    rotate: -14,
+    rotate: -10,
     y: 16,
     scale: 1.04,
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
@@ -59,13 +59,13 @@ const leftCoverVariants: Variants = {
 const centerCoverVariants: Variants = {
   initial: {
     rotate: 0,
-    y: 26,
+    y: 22,
     scale: 1,
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
   },
   hover: {
     rotate: 0,
-    y: 6,
+    y: 4,
     scale: 1.08,
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
   },
@@ -79,7 +79,7 @@ const rightCoverVariants: Variants = {
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
   },
   hover: {
-    rotate: 14,
+    rotate: 10,
     y: 16,
     scale: 1.04,
     transition: { type: "spring" as const, stiffness: 300, damping: 24 },
@@ -149,7 +149,7 @@ function ListCardItem({
             <>
               <motion.div
                 variants={leftCoverVariants}
-                className="w-24 sm:w-25 overflow-hidden shadow-xl -mr-6 z-10 shrink-0 origin-bottom"
+                className="w-24 sm:w-25 overflow-hidden shadow-xl -mr-10 z-10 shrink-0 origin-bottom"
               >
                 <BookCover src={listCovers[0]} className="w-full h-full rounded-r-sm" />
               </motion.div>

@@ -92,10 +92,10 @@ export default function LibraryPage() {
                 setActiveTab("reading-list");
                 setSelectedListId(null);
               }}
-              className={`px-6 py-2.5 md:px-8 md:py-3 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+              className={`px-6 py-2.5 md:px-8 md:py-3 rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer ${
                 activeTab === "reading-list"
-                  ? "bg-foreground text-background shadow-xs"
-                  : "bg-muted/30 text-muted-foreground hover:text-foreground border border-border hover:bg-muted"
+                  ? "bg-foreground text-background border border-foreground shadow-xs"
+                  : "bg-card text-muted-foreground hover:text-foreground border border-border/80 hover:bg-muted/50"
               }`}
             >
               Reading List
@@ -103,10 +103,10 @@ export default function LibraryPage() {
             <button
               type="button"
               onClick={() => setActiveTab("lists")}
-              className={`px-6 py-2.5 md:px-8 md:py-3 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+              className={`px-6 py-2.5 md:px-8 md:py-3 rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer ${
                 activeTab === "lists"
-                  ? "bg-foreground text-background shadow-xs"
-                  : "bg-muted/30 text-muted-foreground hover:text-foreground border border-border hover:bg-muted"
+                  ? "bg-foreground text-background border border-foreground shadow-xs"
+                  : "bg-card text-muted-foreground hover:text-foreground border border-border/80 hover:bg-muted/50"
               }`}
             >
               Lists

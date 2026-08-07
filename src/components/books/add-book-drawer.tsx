@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronsUpDown, Calendar, FileText, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm, Controller, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -14,24 +14,18 @@ import {
   DrawerTrigger,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { BookCover } from "@/components/ui/book-cover";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createBookSchema, type CreateBookInput } from "@/lib/validations/book";
 import { GoogleBookSearchResult, BookStatus } from "@/types/books";
 import { TAG_LIMITS } from "@/lib/books";
 
-import { BookTitleSearch } from "./add-book-drawer/book-title-search";
+import { BookCoverMetaHeader } from "./add-book-drawer/book-cover-meta-header";
+import { BookDescriptionField } from "./add-book-drawer/book-description-field";
 import { BookTagsInput } from "./add-book-drawer/book-tags-input";
 import { BookStatusSelector } from "./add-book-drawer/book-status-selector";
 import { BookCollectionSelect } from "./add-book-drawer/book-collection-select";
+import { BookNoteField } from "./add-book-drawer/book-note-field";
 
 interface AddBookDrawerProps {
   children: React.ReactNode;
@@ -42,7 +36,6 @@ interface AddBookDrawerProps {
 export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBookDrawerProps) {
   const [open, setOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  const [descExpanded, setDescExpanded] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -204,143 +197,27 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
 
         <form id="add-book-form" onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col px-4 md:px-6 gap-6 min-h-0 flex-1 overflow-y-auto pr-1">
           <fieldset disabled={isSubmitting} className="contents">
-            <div className="flex flex-col sm:flex-row gap-5 items-start">
-              <div className="flex sm:flex-col gap-4 items-start shrink-0 w-full sm:w-32">
-                <div className="w-28 sm:w-32 shrink-0">
-                  <BookCover src={coverUrl} className="w-full shadow-md" />
-                </div>
+            <BookCoverMetaHeader
+              control={control}
+              coverUrl={coverUrl}
+              authorsInputValue={authorsInputValue}
+              publishedDate={publishedDate}
+              pageCount={pageCount}
+              isLocked={isLocked}
+              isSubmitting={isSubmitting}
+              errors={errors}
+              setValue={setValue}
+              clearErrors={clearErrors}
+              onSelectGoogleBook={handleSelectGoogleBook}
+              onClearGoogleBook={handleClearGoogleBook}
+            />
 
-                {(publishedDate || pageCount) && (
-                  <div className="flex flex-col gap-1.5 justify-center py-1 sm:hidden text-xs text-muted-foreground font-medium">
-                    {publishedDate && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/60 border border-border/60">
-                        <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <span>{publishedDate}</span>
-                      </div>
-                    )}
-                    {pageCount && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/60 border border-border/60">
-                        <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <span>{pageCount} pages</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 space-y-4 w-full">
-                <Controller
-                  name="title"
-                  control={control}
-                  render={({ field }) => (
-                    <BookTitleSearch
-                      value={field.value || ""}
-                      onChange={(val) => {
-                        field.onChange(val);
-                        if (val.trim()) clearErrors("title");
-                      }}
-                      onSelectBook={handleSelectGoogleBook}
-                      onClearBook={handleClearGoogleBook}
-                      isLocked={isLocked || isSubmitting}
-                      error={errors.title?.message}
-                    />
-                  )}
-                />
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold font-display text-foreground block">
-                    Author
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Author(s) separated by commas..."
-                    disabled={isLocked || isSubmitting}
-                    value={authorsInputValue}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      const parsed = raw.split(",").map((a) => a.trim());
-                      setValue("authors", parsed.length > 0 ? parsed : [""], { shouldValidate: true });
-                      if (parsed.some((a) => a.length > 0)) clearErrors("authors");
-                    }}
-                    className={`h-9 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/20 ${
-                      isLocked || isSubmitting ? "bg-muted/50 cursor-not-allowed font-medium" : ""
-                    } ${errors.authors ? "border-error focus-visible:ring-error" : ""}`}
-                  />
-                  {errors.authors && (
-                    <p className="text-[11px] text-error font-medium">{errors.authors.message}</p>
-                  )}
-                </div>
-
-                {(publishedDate || pageCount) && (
-                  <div className="hidden sm:flex items-center gap-3 pt-0.5 text-xs text-muted-foreground font-medium">
-                    {publishedDate && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 border border-border/60">
-                        <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <span>Published {publishedDate}</span>
-                      </div>
-                    )}
-                    {pageCount && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 border border-border/60">
-                        <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <span>{pageCount} pages</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold font-display text-foreground block">
-                  Description
-                </label>
-                {descriptionValue.length > 80 && (
-                  <Popover open={descExpanded} onOpenChange={setDescExpanded}>
-                    <PopoverTrigger render={
-                      <button
-                        type="button"
-                        className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 font-medium cursor-pointer"
-                      >
-                        <span>Expand view</span>
-                        <ChevronsUpDown className="w-3.5 h-3.5" />
-                      </button>
-                    } />
-                    <PopoverContent
-                      align="end"
-                      side="bottom"
-                      sideOffset={6}
-                      className="w-80 sm:w-96 p-4 rounded-2xl border-border/80 shadow-2xl space-y-2 bg-card text-foreground"
-                    >
-                      <div className="flex items-center justify-between pb-2 border-b border-border/60">
-                        <span className="text-xs font-bold font-display text-foreground">
-                          Full Description
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setDescExpanded(false)}
-                          className="text-muted-foreground hover:text-foreground cursor-pointer"
-                        >
-                          <ChevronsUpDown className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                      <div className="max-h-64 overflow-y-auto text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap pr-1">
-                        {descriptionValue}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                )}
-              </div>
-              <Textarea
-                placeholder="Description..."
-                disabled={isLocked || isSubmitting}
-                {...register("description")}
-                rows={3}
-                className={`rounded-xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground resize-none overflow-y-auto focus-visible:ring-1 focus-visible:ring-foreground/20 ${
-                  isLocked || isSubmitting ? "bg-muted/50 cursor-not-allowed font-medium" : ""
-                }`}
-              />
-            </div>
+            <BookDescriptionField
+              descriptionValue={descriptionValue}
+              isLocked={isLocked}
+              isSubmitting={isSubmitting}
+              register={register}
+            />
 
             <div className="space-y-5 pt-1">
               <Controller
@@ -379,18 +256,10 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
                 )}
               />
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold font-display text-foreground block">
-                  Note
-                </label>
-                <Textarea
-                  placeholder="Write personal thoughts, quotes, or notes..."
-                  disabled={isSubmitting}
-                  {...register("note")}
-                  rows={4}
-                  className="rounded-2xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground resize-none focus-visible:ring-1 focus-visible:ring-foreground/20 p-4"
-                />
-              </div>
+              <BookNoteField
+                isSubmitting={isSubmitting}
+                register={register}
+              />
             </div>
           </fieldset>
         </form>

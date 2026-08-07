@@ -15,8 +15,8 @@ export function AuthHeroCovers() {
 
   return (
     <div className="hidden lg:flex relative overflow-hidden lg:w-[45%] h-screen shrink-0 border-r border-border">
-      <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-background via-background/80 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-background via-background/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-36 bg-linear-to-b from-background via-background/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-36 bg-linear-to-t from-background via-background/80 to-transparent z-10 pointer-events-none" />
 
       <div className="w-full h-full absolute inset-0 grid grid-cols-3 gap-5 p-6 opacity-80">
         <div className="h-full overflow-hidden relative">

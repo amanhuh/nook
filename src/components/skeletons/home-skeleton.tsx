@@ -6,7 +6,7 @@ export function HomeSkeleton() {
     <div className="pb-12">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start">
         <div className="space-y-8 min-w-0">
-          <div className="relative h-48 sm:h-68 p-6 sm:p-8 rounded-3xl bg-muted/60 flex flex-col justify-center gap-3">
+          <div className="relative h-48 sm:h-68 p-6 sm:p-8 rounded-3xl bg-muted flex flex-col justify-center gap-3 border border-border/60">
             <Skeleton className="h-7 sm:h-9 w-64 sm:w-80 rounded-xl" />
             <Skeleton className="h-4 sm:h-5 w-44 sm:w-56 rounded-lg" />
             <Skeleton className="h-10 sm:h-11 w-32 rounded-xl mt-1" />
