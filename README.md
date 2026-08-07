@@ -4,6 +4,10 @@
   <p><strong>Your personal reading corner. Beautifully organized.</strong></p>
 
   <p>
+    <a href="https://nook-aman.vercel.app" target="_blank"><strong>🌐 Live Demo: nook-aman.vercel.app »</strong></a>
+  </p>
+
+  <p>
     <a href="#features">Features</a> •
     <a href="#tech-stack">Tech Stack</a> •
     <a href="#getting-started">Getting Started</a> •
