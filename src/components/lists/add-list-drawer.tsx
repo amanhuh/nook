@@ -192,7 +192,7 @@ export function AddListDrawer({
     <Drawer open={open} onOpenChange={handleOpenChange} swipeDirection={swipeDirection}>
       {children && <DrawerTrigger render={children as React.ReactElement} />}
       <DrawerContent
-        className="flex flex-col gap-5 after:hidden"
+        className="h-[88dvh] md:h-auto flex flex-col gap-5 after:hidden"
         style={{ "--drawer-inset": "10px" } as React.CSSProperties}
       >
         <DrawerHeader className="space-y-1 px-4 pt-4 md:px-6 md:pt-4 text-left shrink-0">
@@ -201,28 +201,26 @@ export function AddListDrawer({
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="px-4 md:px-6 space-y-4 shrink-0">
-          <ListPreviewCard
-            nameValue={nameValue}
-            selectedColorName={selectedColorName as ListColorName}
-            previewCovers={previewCovers}
-            selectedBookCount={selectedBookIds.length}
-          />
-
-          <Controller
-            name="colorName"
-            control={control}
-            render={({ field }) => (
-              <ListColorPicker
-                value={field.value as ListColorName}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </div>
-
-        <form id="add-list-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col px-4 md:px-6 gap-5 min-h-0 flex-1 overflow-y-auto pr-1">
+        <form id="add-list-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col px-4 md:px-6 gap-5 min-h-0 flex-1 overflow-y-auto">
           <fieldset disabled={isSubmitting} className="contents">
+            <ListPreviewCard
+              nameValue={nameValue}
+              selectedColorName={selectedColorName as ListColorName}
+              previewCovers={previewCovers}
+              selectedBookCount={selectedBookIds.length}
+            />
+
+            <Controller
+              name="colorName"
+              control={control}
+              render={({ field }) => (
+                <ListColorPicker
+                  value={field.value as ListColorName}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+
             <div className="space-y-1.5">
               <label className="text-xs font-semibold font-display text-foreground block">
                 List Name:

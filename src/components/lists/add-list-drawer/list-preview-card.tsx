@@ -23,7 +23,7 @@ export function ListPreviewCard({
   return (
     <div
       style={{ backgroundColor: selectedHexColor }}
-      className="w-full h-54 sm:h-64 rounded-3xl p-4 border border-black/10 shadow-sm flex flex-col justify-between items-center relative overflow-hidden transition-colors duration-300 pt-6 pb-0"
+      className="w-full h-54 sm:h-64 shrink-0 rounded-3xl p-4 border border-black/10 shadow-sm flex flex-col justify-between items-center relative overflow-hidden transition-colors duration-300 pt-6 pb-0"
     >
       <div className="text-center space-y-1 z-10 w-full px-2">
         <h3 className="text-lg font-semibold font-display text-foreground/80 tracking-tight drop-shadow-xs truncate max-w-full text-center">

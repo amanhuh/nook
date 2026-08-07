@@ -62,7 +62,7 @@ export function BookCollectionSelect({
           const data = await res.json();
           setCollections(data.lists || []);
         }
-      } catch {}
+      } catch { }
     }
     fetchLists();
   }, []);
@@ -131,12 +131,18 @@ export function BookCollectionSelect({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          style={{ backgroundColor: hasCustomColor ? selectedCollection?.color : undefined }}
-          className={`w-full h-10 px-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-sm ${
-            hasCustomColor
+          style={{
+            backgroundColor: hasCustomColor
+              ? `color-mix(in srgb, ${selectedCollection?.color} 35%, var(--card))`
+              : undefined,
+            borderColor: hasCustomColor
+              ? `color-mix(in srgb, ${selectedCollection?.color} 70%, var(--border))`
+              : undefined,
+          }}
+          className={`w-full h-10 px-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-sm ${hasCustomColor
               ? "border-black/10 text-foreground font-semibold shadow-xs"
               : "border-border/60 bg-card text-foreground hover:border-border"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2 min-w-0 pr-2">
             {hasCustomColor ? (
@@ -145,13 +151,14 @@ export function BookCollectionSelect({
                 className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
               />
             ) : (
-              <Folder className="w-4 h-4 text-muted-foreground shrink-0" />
+              <div
+                className="w-4 h-4 rounded-full border bg-black/15 border-black/15 shrink-0 shadow-2xs"
+              />
             )}
             <span
               title={selectedCollection?.name}
-              className={`truncate max-w-44 sm:max-w-64 ${
-                selectedCollection ? "font-semibold" : "text-muted-foreground font-normal"
-              }`}
+              className={`truncate max-w-44 sm:max-w-64 ${selectedCollection ? "font-semibold" : "text-muted-foreground font-normal"
+                }`}
             >
               {selectedCollection ? selectedCollection.name : "Select a list"}
             </span>
@@ -201,11 +208,10 @@ export function BookCollectionSelect({
                                 setIsCreating(false);
                               }
                             }}
-                            className={`h-8 text-xs rounded-xl bg-card flex-1 ${
-                              error
+                            className={`h-8 text-xs rounded-xl bg-card flex-1 ${error
                                 ? "border-error focus-visible:ring-error text-error"
                                 : "border-border"
-                            }`}
+                              }`}
                             autoFocus
                           />
                           <Button
@@ -273,9 +279,8 @@ export function BookCollectionSelect({
                           onChange(c.id);
                           setIsOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${
-                          isSelected ? "bg-muted/70 font-semibold" : "hover:bg-muted/40"
-                        }`}
+                        className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${isSelected ? "bg-muted/70 font-semibold" : "hover:bg-muted/40"
+                          }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 pr-2">
                           {cHasCustomColor ? (
@@ -284,7 +289,9 @@ export function BookCollectionSelect({
                               className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
                             />
                           ) : (
-                            <Folder className={`w-4 h-4 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                            <div
+                              className="w-3.5 h-3.5 rounded-full border bg-muted border-black/10 shrink-0"
+                            />
                           )}
                           <span title={c.name} className="text-foreground truncate max-w-36 sm:max-w-44">
                             {c.name}

@@ -44,11 +44,10 @@ export function ReadingListTab({
             <div
               key={id}
               onClick={() => onSelectStatus(isSelected ? "ALL" : id)}
-              className={`p-5 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between min-h-36 relative overflow-hidden group shrink-0 w-68 sm:w-auto snap-start ${
-                isSelected
+              className={`p-5 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between min-h-36 relative overflow-hidden group shrink-0 w-68 sm:w-auto snap-start ${isSelected
                   ? "bg-card border-foreground shadow-sm"
                   : "bg-card border-border/80 hover:border-border hover:shadow-xs"
-              }`}
+                }`}
             >
               <div className="space-y-1 z-10 min-w-0 pr-2">
                 <h3 className="text-base font-bold font-display text-foreground tracking-tight truncate">

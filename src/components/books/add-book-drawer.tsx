@@ -186,7 +186,7 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
     <Drawer open={open} onOpenChange={handleOpenChange} swipeDirection={swipeDirection}>
       <DrawerTrigger render={children as React.ReactElement} />
       <DrawerContent
-        className="flex flex-col gap-6 after:hidden"
+        className="h-[88dvh] md:h-auto flex flex-col gap-6 after:hidden"
         style={{ "--drawer-inset": "10px" } as React.CSSProperties}
       >
         <DrawerHeader className="space-y-1 px-4 pt-4 md:px-6 md:pt-4 text-left shrink-0">
@@ -251,7 +251,6 @@ export function AddBookDrawer({ children, defaultStatus, onBookChange }: AddBook
                   <BookCollectionSelect
                     value={field.value?.[0] || null}
                     onChange={(colId) => field.onChange(colId ? [colId] : [])}
-                    open={open}
                   />
                 )}
               />
