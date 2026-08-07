@@ -36,22 +36,32 @@ export async function POST(request: NextRequest) {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: "An account with this email already exists." },
-        { status: 409 }
+        {
+          error: "An account with this email already exists.",
+          fieldErrors: { email: "An account with this email already exists." },
+        },
+        { status: 400 }
       );
     }
 
     const passwordHash = await hashPassword(password);
-    const user = await User.create({ name, email, passwordHash });
+    const user = await User.create({
+      name,
+      email,
+      passwordHash,
+    });
 
     const token = await signToken(user._id.toString());
     await setAuthCookie(token);
 
     return NextResponse.json(
-      { user: { id: user._id, name: user.name, email: user.email } },
+      {
+        user: { id: user._id, name: user.name, email: user.email },
+      },
       { status: 201 }
     );
-  } catch {
+  } catch (err) {
+    console.error("POST /api/auth/signup Error:", err);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }

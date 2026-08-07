@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       user: { id: user._id, name: user.name, email: user.email },
     });
-  } catch {
+  } catch (err) {
+    console.error("POST /api/auth/signin Error:", err);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }
