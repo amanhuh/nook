@@ -8,8 +8,10 @@ export interface BookItem {
   status: BookStatus;
   pageCount?: number;
   currentPage?: number;
+  googleBookId?: string;
   lists?: string[];
   createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 export interface GoogleBookSearchResult {

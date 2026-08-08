@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import { LIST_COLORS } from "@/lib/constants";
 import { ListColorName } from "@/types/lists";
 

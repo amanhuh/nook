@@ -36,15 +36,30 @@ export async function GET(
       return NextResponse.json({ error: "Book not found." }, { status: 404 });
     }
 
+    const userLists = await List.find({
+      userId,
+      "books.bookId": id,
+    }).select("_id");
+
+    const lists = userLists.map((l) => l._id.toString());
+
     const book = {
       id: doc._id.toString(),
+      googleBookId: doc.googleBookId || "",
       title: doc.title,
       authors: doc.authors,
-      coverUrl: doc.coverUrl,
+      description: doc.description || "",
+      coverUrl: doc.coverUrl || "",
       status: doc.status,
       pageCount: doc.pageCount,
       currentPage: doc.currentPage,
+      publishedDate: doc.publishedDate,
+      categories: doc.categories || [],
+      tags: doc.tags || [],
+      note: doc.note || "",
+      lists,
       createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
     };
 
     return NextResponse.json({ book });
@@ -94,7 +109,23 @@ export async function PATCH(
 
     await connectDB();
 
-    const updatePayload: Record<string, unknown> = { ...result.data };
+    const existingBook = await Book.findOne({ _id: id, userId });
+    if (!existingBook) {
+      return NextResponse.json({ error: "Book not found." }, { status: 404 });
+    }
+
+    const { lists: selectedLists, ...bookFields } = result.data;
+    const updatePayload: Record<string, unknown> = { ...bookFields };
+
+    if (existingBook.googleBookId) {
+      delete updatePayload.title;
+      delete updatePayload.authors;
+      delete updatePayload.description;
+      delete updatePayload.coverUrl;
+      delete updatePayload.pageCount;
+      delete updatePayload.publishedDate;
+    }
+
     if (result.data.status === "COMPLETED" && !result.data.completedAt) {
       updatePayload.completedAt = new Date();
     }
@@ -109,15 +140,44 @@ export async function PATCH(
       return NextResponse.json({ error: "Book not found." }, { status: 404 });
     }
 
+    if (Array.isArray(selectedLists)) {
+      await List.updateMany(
+        { userId, _id: { $nin: selectedLists } },
+        { $pull: { books: { bookId: id } } }
+      );
+
+      for (const listId of selectedLists) {
+        await List.updateOne(
+          { _id: listId, userId, "books.bookId": { $ne: id } },
+          { $push: { books: { bookId: id, addedAt: new Date() } } }
+        );
+      }
+    }
+
+    const updatedUserLists = await List.find({
+      userId,
+      "books.bookId": id,
+    }).select("_id");
+
+    const lists = updatedUserLists.map((l) => l._id.toString());
+
     const book = {
       id: doc._id.toString(),
+      googleBookId: doc.googleBookId || "",
       title: doc.title,
       authors: doc.authors,
-      coverUrl: doc.coverUrl,
+      description: doc.description || "",
+      coverUrl: doc.coverUrl || "",
       status: doc.status,
       pageCount: doc.pageCount,
       currentPage: doc.currentPage,
+      publishedDate: doc.publishedDate,
+      categories: doc.categories || [],
+      tags: doc.tags || [],
+      note: doc.note || "",
+      lists,
       createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
     };
 
     return NextResponse.json({ book });

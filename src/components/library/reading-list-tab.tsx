@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { BookItem, BookStatus } from "@/types/books";
 import { BOOK_STATUS_LIST, BOOK_STATUS_CONFIG } from "@/lib/books";
 import { BookCard } from "@/components/books/book-card";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import { AddBookDrawer } from "@/components/books/add-book-drawer";
 
 interface ReadingListTabProps {
@@ -44,9 +44,9 @@ export function ReadingListTab({
             <div
               key={id}
               onClick={() => onSelectStatus(isSelected ? "ALL" : id)}
-              className={`p-5 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between min-h-36 relative overflow-hidden group shrink-0 w-68 sm:w-auto snap-start ${isSelected
-                  ? "bg-card border-foreground shadow-sm"
-                  : "bg-card border-border/80 hover:border-border hover:shadow-xs"
+              className={`p-5 rounded-3xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-36 relative overflow-hidden group shrink-0 w-68 sm:w-auto snap-start ${isSelected
+                ? "bg-card border-foreground shadow-sm"
+                : "bg-card border-border/80 hover:border-stone-400 dark:hover:border-stone-600 hover:shadow-sm"
                 }`}
             >
               <div className="space-y-1 z-10 min-w-0 pr-2">
@@ -59,28 +59,28 @@ export function ReadingListTab({
               </div>
 
               {previewCovers.length > 0 && (
-                <div className="absolute -right-3 -bottom-1.5 h-full flex items-end justify-end pointer-events-none z-10 overflow-hidden pr-2">
-                  <div className="relative flex items-end gap-1.5 h-full">
+                <div className="absolute -right-5 -bottom-1.5 h-full flex items-end justify-end pointer-events-none z-10 pr-3">
+                  <div className="relative flex items-end gap-1.5 h-full transition-transform duration-300 group-hover:scale-103 origin-bottom-right">
                     <div className="absolute inset-0 bg-linear-to-b from-card/30 via-transparent to-transparent z-20 pointer-events-none" />
 
                     {previewCovers.length >= 3 ? (
                       <>
-                        <div className="flex flex-col gap-1 h-[85%] justify-end pb-0 w-11 sm:w-12 shrink-0 z-10">
-                          <div className="h-1/2 w-full overflow-hidden shadow-md">
-                            <BookCover src={previewCovers[0]} className="w-full rounded-sm" />
+                        <div className="hidden sm:flex flex-col gap-1 h-[85%] justify-end pb-0 w-10 sm:w-12 shrink-0 z-10">
+                          <div className="h-1/2 w-full overflow-hidden shadow-md rounded-b-sm">
+                            <BookCover src={previewCovers[0]} className="w-full rounded-sm hover:scale-100" />
                           </div>
-                          <div className="h-1/2 w-full overflow-hidden shadow-md">
-                            <BookCover src={previewCovers[1]} className="w-full rounded-sm" />
+                          <div className="h-1/2 w-full overflow-hidden shadow-md rounded-b-sm">
+                            <BookCover src={previewCovers[1]} className="w-full rounded-sm hover:scale-100" />
                           </div>
                         </div>
 
                         <div className="h-[95%] shadow-xl overflow-hidden shrink-0 z-10">
-                          <BookCover src={previewCovers[2]} className="h-full rounded-sm" />
+                          <BookCover src={previewCovers[2]} className="h-full rounded-sm hover:scale-100" />
                         </div>
                       </>
                     ) : (
                       <div className="h-[95%] shadow-xl overflow-hidden shrink-0 z-10">
-                        <BookCover src={previewCovers[0]} className="h-full rounded-sm" />
+                        <BookCover src={previewCovers[0]} className="h-full rounded-sm hover:scale-100" />
                       </div>
                     )}
                   </div>

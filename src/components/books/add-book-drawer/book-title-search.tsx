@@ -19,6 +19,7 @@ interface BookTitleSearchProps {
   onSelectBook: (book: GoogleBookSearchResult) => void;
   onClearBook: () => void;
   isLocked: boolean;
+  isEditMode?: boolean;
   error?: string;
 }
 
@@ -28,6 +29,7 @@ export function BookTitleSearch({
   onSelectBook,
   onClearBook,
   isLocked,
+  isEditMode,
   error,
 }: BookTitleSearchProps) {
   const [query, setQuery] = useState(value);
@@ -140,7 +142,7 @@ export function BookTitleSearch({
         {loading && !isLocked && (
           <Loader2 className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" />
         )}
-        {isLocked && (
+        {isLocked && !isEditMode && (
           <TooltipProvider delay={0}>
             <Tooltip>
               <TooltipTrigger render={

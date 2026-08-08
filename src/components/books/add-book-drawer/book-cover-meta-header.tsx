@@ -5,7 +5,7 @@ import { Calendar, FileText } from "lucide-react";
 import { Control, FieldErrors, UseFormSetValue, UseFormClearErrors } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import { CreateBookInput } from "@/lib/validations/book";
 import { GoogleBookSearchResult } from "@/types/books";
 import { BookTitleSearch } from "./book-title-search";
@@ -17,6 +17,7 @@ interface BookCoverMetaHeaderProps {
   publishedDate?: number;
   pageCount?: number;
   isLocked: boolean;
+  isEditMode?: boolean;
   isSubmitting: boolean;
   errors: FieldErrors<CreateBookInput>;
   setValue: UseFormSetValue<CreateBookInput>;
@@ -32,6 +33,7 @@ export function BookCoverMetaHeader({
   publishedDate,
   pageCount,
   isLocked,
+  isEditMode,
   isSubmitting,
   errors,
   setValue,
@@ -65,23 +67,53 @@ export function BookCoverMetaHeader({
       </div>
 
       <div className="flex-1 space-y-4 w-full">
-        <Controller
-          name="title"
-          control={control}
-          render={({ field }) => (
-            <BookTitleSearch
-              value={field.value || ""}
-              onChange={(val) => {
-                field.onChange(val);
-                if (val.trim()) clearErrors("title");
-              }}
-              onSelectBook={onSelectGoogleBook}
-              onClearBook={onClearGoogleBook}
-              isLocked={isLocked || isSubmitting}
-              error={errors.title?.message}
+        {isEditMode ? (
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold font-display text-foreground block">
+              Title
+            </label>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  placeholder="Book title..."
+                  disabled={isLocked || isSubmitting}
+                  value={field.value || ""}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    if (e.target.value.trim()) clearErrors("title");
+                  }}
+                  className={`h-9 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/20 ${isLocked || isSubmitting ? "bg-muted/50 cursor-not-allowed font-medium" : ""
+                    } ${errors.title ? "border-error focus-visible:ring-error" : ""}`}
+                />
+              )}
             />
-          )}
-        />
+            {errors.title && (
+              <p className="text-[11px] text-error font-medium">{errors.title.message}</p>
+            )}
+          </div>
+        ) : (
+          <Controller
+            name="title"
+            control={control}
+            render={({ field }) => (
+              <BookTitleSearch
+                value={field.value || ""}
+                onChange={(val) => {
+                  field.onChange(val);
+                  if (val.trim()) clearErrors("title");
+                }}
+                onSelectBook={onSelectGoogleBook}
+                onClearBook={onClearGoogleBook}
+                isLocked={isLocked || isSubmitting}
+                isEditMode={isEditMode}
+                error={errors.title?.message}
+              />
+            )}
+          />
+        )}
 
         <div className="space-y-1.5">
           <label className="text-xs font-semibold font-display text-foreground block">
@@ -98,9 +130,8 @@ export function BookCoverMetaHeader({
               setValue("authors", parsed.length > 0 ? parsed : [""], { shouldValidate: true });
               if (parsed.some((a) => a.length > 0)) clearErrors("authors");
             }}
-            className={`h-9 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/20 ${
-              isLocked || isSubmitting ? "bg-muted/50 cursor-not-allowed font-medium" : ""
-            } ${errors.authors ? "border-error focus-visible:ring-error" : ""}`}
+            className={`h-9 rounded-xl bg-card border-border text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/20 ${isLocked || isSubmitting ? "bg-muted/50 cursor-not-allowed font-medium" : ""
+              } ${errors.authors ? "border-error focus-visible:ring-error" : ""}`}
           />
           {errors.authors && (
             <p className="text-[11px] text-error font-medium">{errors.authors.message}</p>

@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { MoreVertical, Check } from "lucide-react";
+import { MoreVertical, Check, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { BookItem, BookStatus } from "@/types/books";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { BOOK_STATUS_LIST } from "@/lib/books";
+import { AddBookDrawer } from "./add-book-drawer";
 
 interface BookCardProps {
   book: BookItem;
@@ -79,20 +80,17 @@ export function BookCard({
     }
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (isSelectMode) {
-      e.preventDefault();
-      e.stopPropagation();
-      onToggleSelect?.();
-    }
-  };
-
-  return (
+  const cardContent = (
     <div
-      onClick={handleClick}
-      className={`w-36 sm:w-40 shrink-0 snap-start flex flex-col gap-2 relative group ${
-        isSelectMode ? "cursor-pointer select-none" : ""
-      }`}
+      onClick={(e) => {
+        if (isSelectMode) {
+          e.preventDefault();
+          e.stopPropagation();
+          onToggleSelect?.();
+        }
+      }}
+      className={`w-36 sm:w-40 shrink-0 snap-start flex flex-col gap-2 relative group ${isSelectMode ? "cursor-pointer select-none" : "cursor-pointer"
+        }`}
     >
       <div className="relative w-full">
         <BookCover src={book.coverUrl} title={book.title} className="w-full cursor-pointer" />
@@ -100,11 +98,10 @@ export function BookCard({
         {isSelectMode ? (
           <div className="absolute top-2 right-2 z-20">
             <div
-              className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all shadow-md ${
-                isSelected
+              className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all shadow-md ${isSelected
                   ? "bg-primary border-primary text-primary-foreground scale-105"
                   : "bg-background/90 border-border text-transparent group-hover:border-foreground/50"
-              }`}
+                }`}
             >
               <Check className="w-4 h-4" />
             </div>
@@ -134,12 +131,14 @@ export function BookCard({
                     key={id}
                     type="button"
                     disabled={updating}
-                    onClick={() => handleStatusChange(id)}
-                    className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${
-                      isCurrent
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(id);
+                    }}
+                    className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${isCurrent
                         ? "bg-muted/80 font-semibold text-foreground"
                         : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2 truncate">
                       <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -155,7 +154,10 @@ export function BookCard({
               <button
                 type="button"
                 disabled={updating}
-                onClick={handleRemove}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove();
+                }}
                 className="w-full flex items-center gap-2 p-2 rounded-xl text-xs text-error hover:bg-error/10 transition-colors font-medium cursor-pointer"
               >
                 <span>Remove Book</span>
@@ -176,5 +178,15 @@ export function BookCard({
         )}
       </div>
     </div>
+  );
+
+  if (isSelectMode) {
+    return cardContent;
+  }
+
+  return (
+    <AddBookDrawer bookToEdit={book} onBookChange={onBookChange}>
+      {cardContent}
+    </AddBookDrawer>
   );
 }

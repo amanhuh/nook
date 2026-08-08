@@ -52,59 +52,100 @@ export function ListDetailHeader({
           <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground tracking-tight group-hover:opacity-80 transition-opacity">
             {selectedList.name}
           </h2>
-          <button
-            type="button"
-            className="p-1 rounded-full text-subtle hover:text-foreground transition-colors cursor-pointer"
-            title="Edit List"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
       <div className="flex items-center justify-start gap-2.5 relative z-10">
         <TooltipProvider delay={400}>
-          <Tooltip>
-            <TooltipTrigger render={
-              <button
-                type="button"
-                onClick={onOpenEditDrawer}
-                className="p-2 rounded-full border border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                aria-label="Edit list details"
-              >
-                <Pencil className="w-4.5 h-4.5" />
-              </button>
-            } />
-            <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
-              Edit collection
-            </TooltipContent>
-          </Tooltip>
+          {isMobile ? (
+            <>
+              <Tooltip>
+                <TooltipTrigger render={
+                  <button
+                    type="button"
+                    onClick={onOpenDeleteModal}
+                    className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
+                    aria-label="Delete list"
+                  >
+                    <Trash2 className="w-4.5 h-4.5" />
+                  </button>
+                } />
+                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+                  Delete list
+                </TooltipContent>
+              </Tooltip>
 
-          <ListColorPickerPopover
-            currentColorHex={selectedList.color}
-            isColorPickerOpen={isColorPickerOpen}
-            isUpdatingColor={isUpdatingColor}
-            isMobile={isMobile}
-            onToggleColorPicker={onToggleColorPicker}
-            onCloseColorPicker={onCloseColorPicker}
-            onSelectColor={onSelectColor}
-          />
+              <Tooltip>
+                <TooltipTrigger render={
+                  <button
+                    type="button"
+                    onClick={onOpenEditDrawer}
+                    className="p-2 rounded-full border border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    aria-label="Edit collection"
+                  >
+                    <Pencil className="w-4.5 h-4.5" />
+                  </button>
+                } />
+                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+                  Edit collection
+                </TooltipContent>
+              </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger render={
-              <button
-                type="button"
-                onClick={onOpenDeleteModal}
-                className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
-                aria-label="Delete list"
-              >
-                <Trash2 className="w-4.5 h-4.5" />
-              </button>
-            } />
-            <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
-              Delete list
-            </TooltipContent>
-          </Tooltip>
+              <ListColorPickerPopover
+                currentColorHex={selectedList.color}
+                isColorPickerOpen={isColorPickerOpen}
+                isUpdatingColor={isUpdatingColor}
+                isMobile={isMobile}
+                onToggleColorPicker={onToggleColorPicker}
+                onCloseColorPicker={onCloseColorPicker}
+                onSelectColor={onSelectColor}
+              />
+            </>
+          ) : (
+            <>
+              <ListColorPickerPopover
+                currentColorHex={selectedList.color}
+                isColorPickerOpen={isColorPickerOpen}
+                isUpdatingColor={isUpdatingColor}
+                isMobile={isMobile}
+                onToggleColorPicker={onToggleColorPicker}
+                onCloseColorPicker={onCloseColorPicker}
+                onSelectColor={onSelectColor}
+              />
+
+              <Tooltip>
+                <TooltipTrigger render={
+                  <button
+                    type="button"
+                    onClick={onOpenEditDrawer}
+                    className="p-2 rounded-full border border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    aria-label="Edit collection"
+                  >
+                    <Pencil className="w-4.5 h-4.5" />
+                  </button>
+                } />
+                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+                  Edit collection
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger render={
+                  <button
+                    type="button"
+                    onClick={onOpenDeleteModal}
+                    className="p-2 rounded-full border border-border/80 hover:bg-error/10 hover:border-error/30 text-muted-foreground hover:text-error transition-colors cursor-pointer shrink-0"
+                    aria-label="Delete list"
+                  >
+                    <Trash2 className="w-4.5 h-4.5" />
+                  </button>
+                } />
+                <TooltipContent side="top" sideOffset={6} className="bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md">
+                  Delete list
+                </TooltipContent>
+              </Tooltip>
+            </>
+          )}
         </TooltipProvider>
       </div>
     </div>

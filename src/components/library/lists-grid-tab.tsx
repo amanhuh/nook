@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { motion, Variants } from "motion/react";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import { AddListDrawer } from "@/components/lists/add-list-drawer";
 
 interface ListBookPreview {
@@ -181,7 +181,7 @@ export function ListsGridTab({
 }: ListsGridTabProps) {
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
         <AddListDrawer onListCreated={onListCreated}>
           <div className="h-64 sm:h-72 rounded-3xl border-2 border-dashed border-border bg-card/40 hover:bg-muted/70 hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center gap-2 group">
             <Plus className="w-7 h-7 text-muted-foreground group-hover:text-foreground transition-colors" />

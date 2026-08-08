@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Check, ChevronDown } from "lucide-react";
-import { BookCover } from "@/components/ui/book-cover";
+import { BookCover } from "@/components/books/book-cover";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Popover,
@@ -66,11 +66,10 @@ export function ListBookSelector({
                 onStatusFilterChange("ALL");
                 onFilterDropdownOpenChange(false);
               }}
-              className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${
-                statusFilter === "ALL"
+              className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${statusFilter === "ALL"
                   ? "bg-muted/80 font-semibold text-foreground"
                   : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <span>All Statuses</span>
               {statusFilter === "ALL" && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
@@ -85,11 +84,10 @@ export function ListBookSelector({
                     onStatusFilterChange(id);
                     onFilterDropdownOpenChange(false);
                   }}
-                  className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${
-                    isSelected
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-xs transition-colors cursor-pointer ${isSelected
                       ? "bg-muted/80 font-semibold text-foreground"
                       : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   <span className="truncate">{sectionTitle}</span>
                   {isSelected && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
@@ -121,19 +119,17 @@ export function ListBookSelector({
               <div
                 key={book.id}
                 onClick={() => onToggleBook(book.id)}
-                className={`relative rounded-xl overflow-hidden border-2 transition-all cursor-pointer group ${
-                  isChecked
+                className={`relative rounded-xl overflow-hidden border-2 transition-all cursor-pointer group ${isChecked
                     ? "border-primary shadow-xs"
                     : "border-border/60 hover:border-border"
-                }`}
+                  }`}
               >
                 <BookCover src={book.coverUrl} title={book.title} className="w-full aspect-2/3 rounded-xl" />
                 <div className="absolute top-1.5 right-1.5 z-10">
-                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                    isChecked
+                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${isChecked
                       ? "bg-primary border-primary text-primary-foreground shadow-xs"
                       : "bg-background/80 border-border text-transparent group-hover:border-foreground/40"
-                  }`}>
+                    }`}>
                     <Check className="w-3.5 h-3.5" />
                   </div>
                 </div>
